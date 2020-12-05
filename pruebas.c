@@ -72,12 +72,22 @@ void pruebas_de_abb_con_4_elementos() {
     pa2m_afirmar(abb != NULL, "El abb se puede crear");
     pa2m_afirmar(arbol_vacio(abb) == true, "El abb esta vacio");
     pa2m_afirmar(arbol_insertar(abb, pesar_manzana(5)) == EXITO, "Se pudo insertar un elemento");  
+    pa2m_afirmar(((manzana_t*)(abb->nodo_raiz->elemento))->peso == 5, "EL elemento RAIZ es el esperado");
     pa2m_afirmar(arbol_vacio(abb) == false, "El abb no esta vacio");
     pa2m_afirmar(((manzana_t*)arbol_raiz(abb))->peso == 5, "La raiz del arbol es la esperada");
     pa2m_afirmar(arbol_insertar(abb, pesar_manzana(7)) == EXITO, "Se pudo insertar un elemento mayor");  
     pa2m_afirmar(((manzana_t*)(abb->nodo_raiz->derecha->elemento))->peso == 7, "EL elemento derecho es el esperado");
     pa2m_afirmar(arbol_insertar(abb, pesar_manzana(3)) == EXITO, "Se pudo insertar un elemento menor");  
     pa2m_afirmar(((manzana_t*)(abb->nodo_raiz->izquierda->elemento))->peso == 3, "EL elemento izquierdo es el esperado");
+    pa2m_afirmar(((manzana_t*)(arbol_buscar(abb,pesar_manzana(5))))->peso == 5, "Se encontro el 5");
+    pa2m_afirmar(((manzana_t*)(arbol_buscar(abb,pesar_manzana(3))))->peso == 3, "Se encontro el 3");
+    pa2m_afirmar(((manzana_t*)(arbol_buscar(abb,pesar_manzana(7))))->peso == 7, "Se encontro el 7");
+    pa2m_afirmar(arbol_insertar(abb, pesar_manzana(1)) == EXITO, "Se pudo insertar un elemento 1");  
+    pa2m_afirmar(arbol_insertar(abb, pesar_manzana(6)) == EXITO, "Se pudo insertar un elemento 6");  
+    pa2m_afirmar(arbol_insertar(abb, pesar_manzana(4)) == EXITO, "Se pudo insertar un elemento 4"); 
+    pa2m_afirmar(arbol_insertar(abb, pesar_manzana(5)) == EXITO, "Se pudo insertar un elemento 5");  
+    pa2m_afirmar(arbol_insertar(abb, pesar_manzana(8)) == EXITO, "Se pudo insertar un elemento 8");  
+
     //destruir
     
     
