@@ -45,6 +45,7 @@ int comparador(void* elemento1, void* elemento2) {
     if (ele1 == ele2) resultado = IGUALES;
     else if (ele1 > ele2) resultado = ANTERIOR_MAYOR;
     else if (ele1 < ele2) resultado = ANTERIOR_MENOR;
+    //printf("\nresultado: %d\n", resultado);
 
     return resultado;
 }
@@ -82,12 +83,20 @@ void pruebas_de_abb_con_4_elementos() {
     pa2m_afirmar(((manzana_t*)(arbol_buscar(abb,pesar_manzana(5))))->peso == 5, "Se encontro el 5");
     pa2m_afirmar(((manzana_t*)(arbol_buscar(abb,pesar_manzana(3))))->peso == 3, "Se encontro el 3");
     pa2m_afirmar(((manzana_t*)(arbol_buscar(abb,pesar_manzana(7))))->peso == 7, "Se encontro el 7");
-    pa2m_afirmar(arbol_insertar(abb, pesar_manzana(1)) == EXITO, "Se pudo insertar un elemento 1");  
-    pa2m_afirmar(arbol_insertar(abb, pesar_manzana(6)) == EXITO, "Se pudo insertar un elemento 6");  
-    pa2m_afirmar(arbol_insertar(abb, pesar_manzana(4)) == EXITO, "Se pudo insertar un elemento 4"); 
-    pa2m_afirmar(arbol_insertar(abb, pesar_manzana(5)) == EXITO, "Se pudo insertar un elemento 5");  
-    pa2m_afirmar(arbol_insertar(abb, pesar_manzana(8)) == EXITO, "Se pudo insertar un elemento 8");  
-
+    pa2m_afirmar(arbol_insertar(abb, pesar_manzana(1)) == EXITO, "Inserto el elemento 1");  
+    pa2m_afirmar(arbol_insertar(abb, pesar_manzana(6)) == EXITO, "Inserto el elemento 6");  
+    pa2m_afirmar(arbol_insertar(abb, pesar_manzana(4)) == EXITO, "Inserto el elemento 4"); 
+    pa2m_afirmar(arbol_insertar(abb, pesar_manzana(5)) == EXITO, "Inserto el elemento 5");  
+    pa2m_afirmar(arbol_insertar(abb, pesar_manzana(8)) == EXITO, "Inserto el elemento 8");
+    pa2m_afirmar(arbol_insertar(abb, pesar_manzana(7)) == EXITO, "Inserto el elemento 7");  
+    pa2m_afirmar(arbol_insertar(abb, pesar_manzana(8)) == EXITO, "Inserto el elemento 8");
+    //pa2m_afirmar(arbol_insertar(abb, pesar_manzana(7)) == EXITO, "Inserto el elemento 7");
+    pa2m_afirmar(((manzana_t*)(arbol_buscar(abb,pesar_manzana(5))))->peso == 5, "Se encontro el 5");
+    pa2m_afirmar(((manzana_t*)(arbol_buscar(abb,pesar_manzana(7))))->peso == 7, "Se encontro el 7");
+    pa2m_afirmar(((manzana_t*)(arbol_buscar(abb,pesar_manzana(8))))->peso == 8, "Se encontro el 8");
+    pa2m_afirmar(((manzana_t*)(arbol_buscar(abb,pesar_manzana(4))))->peso == 4, "Se encontro el 4");
+    pa2m_afirmar(((manzana_t*)(arbol_buscar(abb,pesar_manzana(1))))->peso == 1, "Se encontro el 1");
+    //pa2m_afirmar(((manzana_t*)(arbol_buscar(abb,pesar_manzana(8))))->peso == 7, "Se encontro el 8");
     //destruir
     
     

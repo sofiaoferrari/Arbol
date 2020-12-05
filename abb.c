@@ -3,9 +3,9 @@
 
 #define EXITO 0
 #define ERROR -1
-#define VACIO 0 //sacar
-#define PRIMERO 0 //sacar
-#define UNITARIO 1 //sacar
+#define BUSCAR 0 //sacar
+#define INSERTAR 1 //sacar
+#define ELIMINAR -1
 #define IGUAL 0
 #define MENOR 1
 #define MAYOR -1
@@ -16,22 +16,20 @@ bool arbol_vacio(abb_t* arbol) {
 }
 
 void* arbol_raiz(abb_t* arbol) {
-        //printf("\nENTRO A ARBOL RAIZ\n");
     if (!arbol || !(arbol->nodo_raiz)) return NULL;
-        //printf("\nEL NODO RAIZ NO ES NULO\n");
-
     return arbol->nodo_raiz->elemento;
 }
 
-nodo_abb_t* encontrar_elemento(abb_t* arbol, nodo_abb_t* nodo_raiz, void* elemento) {
-    if (!arbol->comparador) return NULL; //!nodo_raiz
-    int comparacion = arbol->comparador(nodo_raiz->elemento, elemento);
-    if ((comparacion == IGUAL) && (arbol_raiz(arbol) == elemento))
+nodo_abb_t* encontrar_elemento(abb_comparador comparador, nodo_abb_t* nodo_raiz, void* elemento, int accion) {
+    if (!comparador) return NULL; 
+    int comparacion = comparador(nodo_raiz->elemento, elemento);
+
+    if ((comparacion == IGUAL) && (accion == BUSCAR))
         nodo_raiz = nodo_raiz;
-    else if (((comparacion == MAYOR) || (comparacion == IGUAL)) && (nodo_raiz->derecha)) 
-        nodo_raiz = encontrar_elemento(arbol,nodo_raiz->derecha, elemento);
+    else if (((comparacion == MAYOR) || (comparacion == IGUAL)) && (nodo_raiz->derecha))
+        nodo_raiz = encontrar_elemento(comparador,nodo_raiz->derecha, elemento, INSERTAR);
     else if ((comparacion == MENOR) && (nodo_raiz->izquierda))
-        nodo_raiz = encontrar_elemento(arbol,nodo_raiz->izquierda, elemento);
+        nodo_raiz = encontrar_elemento(comparador,nodo_raiz->izquierda, elemento, INSERTAR);
 
     return nodo_raiz;
 }
@@ -39,9 +37,9 @@ nodo_abb_t* encontrar_elemento(abb_t* arbol, nodo_abb_t* nodo_raiz, void* elemen
 void* arbol_buscar(abb_t* arbol, void* elemento) {
     if (!arbol || !elemento || arbol_vacio(arbol)) return NULL;
     nodo_abb_t* encontrado = NULL;
-    if (arbol->nodo_raiz->elemento) {
-        encontrado = encontrar_elemento(arbol, arbol->nodo_raiz, elemento);
-    }
+    if (arbol->nodo_raiz->elemento) 
+        encontrado = encontrar_elemento(arbol->comparador, arbol->nodo_raiz, elemento, BUSCAR);
+    
     return encontrado->elemento;
 }
 
@@ -64,22 +62,18 @@ int insertar_elemento(nodo_abb_t** nodo_raiz, void* elemento) {
 int arbol_insertar(abb_t* arbol, void* elemento) {
     if (!arbol || !elemento) return ERROR;
     int insertado = ERROR;
-    if (arbol_vacio(arbol)){
-        //printf("\nEL ARBOL ESTA VACIO");
+    if (arbol_vacio(arbol))
         insertado = insertar_elemento(&arbol->nodo_raiz, elemento);
-       // printf("\nELEMENTO INSERTADO: %d\n", *(int*)(arbol->nodo_raiz->elemento));
-    } else {
-        nodo_abb_t* nodo = NULL;
-        nodo = encontrar_elemento(arbol, arbol->nodo_raiz, elemento);
+    else {
+        nodo_abb_t* nodo = encontrar_elemento(arbol->comparador, arbol->nodo_raiz, elemento, INSERTAR);
         if (nodo) { //no tiene hijos
             int comparacion = arbol->comparador(nodo->elemento, elemento);
-            if (comparacion == MAYOR || nodo == IGUAL)
+            if (comparacion == MAYOR || comparacion == IGUAL)
                 insertado = insertar_elemento(&nodo->derecha, elemento);
-            else if (comparacion == MENOR)  //hay un elemento igual 
+            else if (comparacion == MENOR)  
                 insertado = insertar_elemento(&nodo->izquierda, elemento);
         }
     }
-    //printf("iNSERTADO: %d", insertado);
     return insertado;
 }
 /*
