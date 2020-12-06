@@ -4,9 +4,9 @@
 
 #define EXITO 0
 #define ERROR -1
-#define VACIO 0
-#define PRIMERO 0
-#define UNITARIO 1
+#define VACIO 0 //
+#define PRIMERO 0//
+#define UNITARIO 1//
 #define MAX_CANT 10
 #define IGUALES 0
 #define ANTERIOR_MAYOR 1
@@ -18,7 +18,11 @@ typedef struct manzana {
 } manzana_t;
 
 void comer_manzana(manzana_t* manzana){
+    printf("\nTMBIEN ENTRO ACA\n");
+
     free(manzana);   
+    printf("\nACA FALLA\n");
+
 }
 
 void destructor(void* elemento) {
@@ -86,7 +90,7 @@ void pruebas_de_abb_con_4_elementos() {
     pa2m_afirmar(arbol_insertar(abb, pesar_manzana(1)) == EXITO, "Inserto el elemento 1");  
     pa2m_afirmar(arbol_insertar(abb, pesar_manzana(6)) == EXITO, "Inserto el elemento 6");  
     pa2m_afirmar(arbol_insertar(abb, pesar_manzana(4)) == EXITO, "Inserto el elemento 4"); 
-    pa2m_afirmar(arbol_insertar(abb, pesar_manzana(5)) == EXITO, "Inserto el elemento 5");  
+    //pa2m_afirmar(arbol_insertar(abb, pesar_manzana(5)) == EXITO, "Inserto el elemento 5");  
     pa2m_afirmar(arbol_insertar(abb, pesar_manzana(8)) == EXITO, "Inserto el elemento 8");
     pa2m_afirmar(arbol_insertar(abb, pesar_manzana(7)) == EXITO, "Inserto el elemento 7");  
     pa2m_afirmar(arbol_insertar(abb, pesar_manzana(8)) == EXITO, "Inserto el elemento 8");
@@ -95,8 +99,11 @@ void pruebas_de_abb_con_4_elementos() {
     pa2m_afirmar(((manzana_t*)(arbol_buscar(abb,pesar_manzana(7))))->peso == 7, "Se encontro el 7");
     pa2m_afirmar(((manzana_t*)(arbol_buscar(abb,pesar_manzana(8))))->peso == 8, "Se encontro el 8");
     pa2m_afirmar(((manzana_t*)(arbol_buscar(abb,pesar_manzana(4))))->peso == 4, "Se encontro el 4");
-    pa2m_afirmar(((manzana_t*)(arbol_buscar(abb,pesar_manzana(1))))->peso == 1, "Se encontro el 1");
+    pa2m_afirmar(((manzana_t*)(arbol_buscar(abb,pesar_manzana(10))))->peso != 10, "no Se encontro el 10");
     //pa2m_afirmar(((manzana_t*)(arbol_buscar(abb,pesar_manzana(8))))->peso == 7, "Se encontro el 8");
+    pa2m_afirmar(arbol_borrar(abb, pesar_manzana(1)) == EXITO, "Se pudo borrar el elemento 1");
+    pa2m_afirmar(((manzana_t*)(arbol_buscar(abb,pesar_manzana(1))))->peso != 1, "No se encontro el 1");
+    
     //destruir
     
     
