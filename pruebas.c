@@ -4,10 +4,9 @@
 
 #define EXITO 0
 #define ERROR -1
-#define VACIO 0 //
-#define PRIMERO 0//
-#define UNITARIO 1//
+
 #define MAX_CANT 10
+
 #define IGUALES 0
 #define ANTERIOR_MAYOR 1
 #define ANTERIOR_MENOR -1
@@ -18,11 +17,8 @@ typedef struct manzana {
 } manzana_t;
 
 void comer_manzana(manzana_t* manzana){
-    printf("\nTMBIEN ENTRO ACA\n");
 
-    free(manzana);   
-    printf("\nACA FALLA\n");
-
+    free(manzana);  
 }
 
 void destructor(void* elemento) {
@@ -32,15 +28,13 @@ void destructor(void* elemento) {
 }
 
 manzana_t* pesar_manzana(int peso){
-    manzana_t* manzana = (manzana_t*)malloc(sizeof(manzana_t));
+    manzana_t* manzana = (manzana_t*)calloc(1,sizeof(manzana_t));
     if(manzana) manzana->peso = peso;
 
     return manzana;
 }
 
 int comparador(void* elemento1, void* elemento2) {
-    //printf("elemento anterior: %d", *(int*)elemento1);
-    //printf("elemento nuevo: %d", *(int*)elemento2);
 
     int resultado = 2;
     int ele1 = *(int*)elemento1;
@@ -49,7 +43,6 @@ int comparador(void* elemento1, void* elemento2) {
     if (ele1 == ele2) resultado = IGUALES;
     else if (ele1 > ele2) resultado = ANTERIOR_MAYOR;
     else if (ele1 < ele2) resultado = ANTERIOR_MENOR;
-    //printf("\nresultado: %d\n", resultado);
 
     return resultado;
 }
@@ -57,14 +50,17 @@ int comparador(void* elemento1, void* elemento2) {
 void pruebas_con_null() {
     abb_t* arbol_nulo = arbol_crear(NULL,NULL);
     pa2m_afirmar(arbol_nulo == NULL, "El arbol no se puede crear sin un comparador");
+    arbol_destruir(arbol_nulo);
     arbol_nulo = arbol_crear(&comparador,NULL);
     pa2m_afirmar(arbol_nulo == NULL, "El arbol no se puede crear sin un destructor");
     pa2m_afirmar(arbol_vacio(arbol_nulo) == true, "Un arbol nulo es considerado vacio");
     pa2m_afirmar(arbol_insertar(NULL, pesar_manzana(6)) == ERROR, "Devuelve ERROR al insertar un elemento en un arbol nulo");
+    arbol_destruir(arbol_nulo);
     //destruir
     abb_t* abb = arbol_crear(&comparador,&destructor);
     pa2m_afirmar(arbol_insertar(abb, NULL) == ERROR, "No se pudo insertar un elemento NULL");
     pa2m_afirmar(arbol_raiz(abb) == NULL, "El nodo raiz es NULL");
+    arbol_destruir(abb);
     //destruir
 
 }
@@ -89,20 +85,28 @@ void pruebas_de_abb_con_4_elementos() {
     pa2m_afirmar(((manzana_t*)(arbol_buscar(abb,pesar_manzana(7))))->peso == 7, "Se encontro el 7");
     pa2m_afirmar(arbol_insertar(abb, pesar_manzana(1)) == EXITO, "Inserto el elemento 1");  
     pa2m_afirmar(arbol_insertar(abb, pesar_manzana(6)) == EXITO, "Inserto el elemento 6");  
-    pa2m_afirmar(arbol_insertar(abb, pesar_manzana(4)) == EXITO, "Inserto el elemento 4"); 
+    //pa2m_afirmar(arbol_insertar(abb, pesar_manzana(4)) == EXITO, "Inserto el elemento 4"); 
     //pa2m_afirmar(arbol_insertar(abb, pesar_manzana(5)) == EXITO, "Inserto el elemento 5");  
     pa2m_afirmar(arbol_insertar(abb, pesar_manzana(8)) == EXITO, "Inserto el elemento 8");
-    pa2m_afirmar(arbol_insertar(abb, pesar_manzana(7)) == EXITO, "Inserto el elemento 7");  
-    pa2m_afirmar(arbol_insertar(abb, pesar_manzana(8)) == EXITO, "Inserto el elemento 8");
+   // pa2m_afirmar(arbol_insertar(abb, pesar_manzana(7)) == EXITO, "Inserto el elemento 7");  
+    //pa2m_afirmar(arbol_insertar(abb, pesar_manzana(8)) == EXITO, "Inserto el elemento 8");
     //pa2m_afirmar(arbol_insertar(abb, pesar_manzana(7)) == EXITO, "Inserto el elemento 7");
+    pa2m_afirmar(((manzana_t*)(arbol_buscar(abb,pesar_manzana(6))))->peso == 6, "Se encontro el 6");
     pa2m_afirmar(((manzana_t*)(arbol_buscar(abb,pesar_manzana(5))))->peso == 5, "Se encontro el 5");
     pa2m_afirmar(((manzana_t*)(arbol_buscar(abb,pesar_manzana(7))))->peso == 7, "Se encontro el 7");
     pa2m_afirmar(((manzana_t*)(arbol_buscar(abb,pesar_manzana(8))))->peso == 8, "Se encontro el 8");
-    pa2m_afirmar(((manzana_t*)(arbol_buscar(abb,pesar_manzana(4))))->peso == 4, "Se encontro el 4");
-    pa2m_afirmar(((manzana_t*)(arbol_buscar(abb,pesar_manzana(10))))->peso != 10, "no Se encontro el 10");
+    //pa2m_afirmar(((manzana_t*)(arbol_buscar(abb,pesar_manzana(4))))->peso == 4, "Se encontro el 4");
+    pa2m_afirmar(arbol_buscar(abb,pesar_manzana(10)) == (void*)NULL, "no Se encontro el 10");
+    pa2m_afirmar(arbol_buscar(abb,pesar_manzana(11)) == (void*) NULL, "no Se encontro el 11");
     //pa2m_afirmar(((manzana_t*)(arbol_buscar(abb,pesar_manzana(8))))->peso == 7, "Se encontro el 8");
-    pa2m_afirmar(arbol_borrar(abb, pesar_manzana(1)) == EXITO, "Se pudo borrar el elemento 1");
-    pa2m_afirmar(((manzana_t*)(arbol_buscar(abb,pesar_manzana(1))))->peso != 1, "No se encontro el 1");
+    pa2m_afirmar(arbol_borrar(abb, pesar_manzana(5)) == EXITO, "Se pudo borrar el elemento 5");
+    pa2m_afirmar(arbol_buscar(abb,pesar_manzana(5)) == (void*) NULL, "No se encontro el 5");
+    pa2m_afirmar(((manzana_t*)(arbol_buscar(abb,pesar_manzana(1))))->peso == 1, "Se encontro el 1");
+    //pa2m_afirmar(arbol_borrar(abb, pesar_manzana(1)) == EXITO, "Se pudo borrar el elemento 1");
+    //pa2m_afirmar(arbol_buscar(abb,pesar_manzana(1)) == (void*) NULL, "No se encontro el 1");
+    //pa2m_afirmar(arbol_destruir(abb,pesar_manzana(1)) == (void*) NULL, "No se encontro el 1");
+    arbol_destruir(abb);
+    pa2m_afirmar(arbol_vacio(abb) == true, "Se pudo destruir el arbol");
     
     //destruir
     
@@ -150,11 +154,8 @@ int main() {
     pa2m_nuevo_grupo("PRUEBAS DE RECORRIDO POSTORDEN");
     pruebas_de_postorden();
     
-    pa2m_nuevo_grupo("PRUEBAS DE ITERADOR EXTERNO"); //????
-    pruebas_de_iterador_ex();
-
-    pa2m_nuevo_grupo("PRUEBAS DE ITERADOR INTERNO"); //????
-    pruebas_de_iterador_in();
+    pa2m_nuevo_grupo("PRUEBAS DE ITERADOR"); 
+    pruebas_de_iterador();
 */
     pa2m_mostrar_reporte();
     return EXITO;
