@@ -5,17 +5,17 @@
 #define ERROR -1
 #define VACIO 0
 
-#define BUSCAR 0 
-#define INSERTAR 1 
-#define ELIMINAR -1
+#define BUSCAR 0      //nodo que contiene dicho elemento
+#define INSERTAR 1    //nodo a ser padre del elemento
+#define ELIMINAR -1    //nodo anterior (nodo padre) de dicho elemento
 
-#define IGUAL 0
-#define MENOR 1     //izquierda
-#define MAYOR -1   //derecha
+#define IGUAL 0     //derecha
+#define MAYOR 1    //derecha
+#define MENOR -1  //izquierda
 
 #define SIN_HIJOS 0
-#define UN_HIJO_I 1
-#define UN_HIJO_D -1
+#define UN_HIJO_I -1
+#define UN_HIJO_D 1
 #define DOS_HIJOS 2
 
 bool arbol_vacio(abb_t* arbol) {
@@ -171,18 +171,19 @@ void arbol_destruir(abb_t* arbol) {
  * Funcion recursiva
  * 
 */
+/*
 nodo_abb_t* buscar_nodo_segun_elemento(abb_comparador comparador, nodo_abb_t* nodo_raiz, void* elemento, int accion, nodo_abb_t* nodo_anterior) {
     if (!nodo_raiz) return NULL;
-    int comparacion = comparador(nodo_raiz->elemento, elemento);
+    int comparacion = comparador(elemento, nodo_raiz->elemento);
    
     if ((comparacion == IGUAL) && ((accion == BUSCAR) || (accion == ELIMINAR))) {
         nodo_raiz = nodo_raiz;      
     }
-    else if (((comparacion == MAYOR) || (comparacion == IGUAL && accion == INSERTAR)) && (nodo_raiz->derecha)) {
+    else if (((comparacion >= MAYOR) || (comparacion == IGUAL && accion == INSERTAR)) && (nodo_raiz->derecha)) {
         nodo_anterior = nodo_raiz;
         nodo_raiz = buscar_nodo_segun_elemento(comparador,nodo_raiz->derecha, elemento, accion, nodo_anterior);
     }
-    else if ((comparacion == MENOR) && (nodo_raiz->izquierda)) {
+    else if ((comparacion <= MENOR) && (nodo_raiz->izquierda)) {
         nodo_anterior = nodo_raiz;
         nodo_raiz = buscar_nodo_segun_elemento(comparador,nodo_raiz->izquierda, elemento, accion, nodo_anterior);
     }
@@ -190,10 +191,49 @@ nodo_abb_t* buscar_nodo_segun_elemento(abb_comparador comparador, nodo_abb_t* no
         return nodo_anterior;
 
     return nodo_raiz;
+}*/
+
+nodo_abb_t* buscar_nuevo_nodo_padre(abb_comparador comparador, nodo_abb_t* nuevo_padre, void* elemento){ //insertar
+    int comparacion = comparador(elemento, nuevo_padre->elemento);
+
+    if (comparacion >= IGUAL && nuevo_padre->derecha) 
+        nuevo_padre = buscar_nuevo_nodo_padre(comparador, nuevo_padre->derecha, elemento);
+    else if (comparacion <= MENOR && nuevo_padre->izquierda)
+        nuevo_padre = buscar_nuevo_nodo_padre(comparador, nuevo_padre->izquierda, elemento);
+
+    return nuevo_padre;
 }
 
-nodo_abb_t* verifico_nodo_sea_el_esperado(abb_t* arbol, void* elemento, nodo_abb_t* nodo_encontrado){
-    nodo_encontrado = buscar_nodo_segun_elemento(arbol->comparador, arbol->nodo_raiz, elemento, BUSCAR, nodo_encontrado);
+nodo_abb_t* buscar_nodo_padre(abb_comparador comparador, nodo_abb_t* nodo_hijo, void* elemento, nodo_abb_t* nodo_padre) { //borrar
+    int comparacion = comparador(elemento, nodo_hijo->elemento);
+    if (comparacion == IGUAL) return nodo_padre;
+
+    if (comparacion >= MAYOR && nodo_hijo->derecha) {
+        nodo_padre = nodo_hijo;
+        nodo_hijo = buscar_nodo_padre(comparador, nodo_hijo->derecha, elemento, nodo_padre);
+    } else if (comparacion <= MENOR && nodo_hijo->izquierda) {
+        nodo_padre = nodo_hijo;
+        nodo_hijo = buscar_nodo_padre(comparador, nodo_hijo->izquierda, elemento, nodo_padre);
+    }
+    return nodo_hijo;
+}
+
+
+nodo_abb_t* buscar_nodo_segun_elemento(abb_comparador comparador, nodo_abb_t* nodo_raiz, void* elemento) { //buscar
+    int comparacion = comparador(elemento, nodo_raiz->elemento);
+    if (comparacion == IGUAL) return nodo_raiz;
+
+    if (comparacion >= MAYOR && nodo_raiz->derecha) 
+        nodo_raiz = buscar_nodo_segun_elemento(comparador, nodo_raiz->derecha, elemento);
+    else if (comparacion <= MENOR && nodo_raiz->izquierda)
+        nodo_raiz = buscar_nodo_segun_elemento(comparador, nodo_raiz->izquierda, elemento);
+
+    return nodo_raiz;
+}
+
+nodo_abb_t* verifico_nodo_sea_el_esperado(abb_t* arbol, void* elemento, nodo_abb_t* nodo_encontrado){ //buscar
+   // nodo_encontrado = buscar_nodo_segun_elemento(arbol->comparador, arbol->nodo_raiz, elemento, BUSCAR, nodo_encontrado);
+    nodo_encontrado = buscar_nodo_segun_elemento(arbol->comparador, arbol->nodo_raiz, elemento);
     if (arbol->comparador(nodo_encontrado->elemento,elemento) != IGUAL)
         return NULL;
     return nodo_encontrado;
@@ -214,7 +254,7 @@ void* arbol_buscar(abb_t* arbol, void* elemento) {
 /*
  * Funcion recursiva
 */
-nodo_abb_t* elemento_sucesor_inorden(nodo_abb_t* nodo_hijo, nodo_abb_t* nodo_padre) { //lamara con derecha
+nodo_abb_t* elemento_sucesor_inorden(nodo_abb_t* nodo_hijo, nodo_abb_t* nodo_padre) { 
     if (nodo_hijo->izquierda) {
         nodo_padre = nodo_hijo;
         nodo_hijo = nodo_hijo->izquierda;
@@ -234,48 +274,58 @@ nodo_abb_t* buscar_hijo_mayor(nodo_abb_t* nodo_hijo, nodo_abb_t* nodo_padre) {
 }
 
 nodo_abb_t* nodo_con_dos_hijos(abb_t* arbol, nodo_abb_t* nodo_padre, nodo_abb_t* nodo_a_borrar, nodo_abb_t* sucesor) {
-    nodo_abb_t* hijo_mayor = NULL;
+    //nodo_abb_t* hijo_mayor = NULL;
     nodo_abb_t* padre_del_sucesor = nodo_padre;
     sucesor = elemento_sucesor_inorden(nodo_a_borrar->derecha, padre_del_sucesor);
-    bool hijo_es_sucesor = !(arbol->comparador(nodo_a_borrar->derecha->elemento, sucesor->elemento));
+    bool hijo_es_sucesor = !(arbol->comparador(sucesor->elemento, nodo_a_borrar->derecha->elemento));
 
     if (!hijo_es_sucesor) {
-        padre_del_sucesor = buscar_nodo_segun_elemento(arbol->comparador, arbol->nodo_raiz, sucesor->elemento, ELIMINAR, arbol->nodo_raiz);
+       // padre_del_sucesor = buscar_nodo_segun_elemento(arbol->comparador, arbol->nodo_raiz, sucesor->elemento, ELIMINAR, arbol->nodo_raiz);
+        padre_del_sucesor = buscar_nodo_padre(arbol->comparador, arbol->nodo_raiz, sucesor->elemento, padre_del_sucesor);
         padre_del_sucesor->izquierda = NULL;
-        if(!sucesor->derecha)
-            sucesor->derecha = nodo_a_borrar->derecha;
-        else if (sucesor->derecha) {
-            hijo_mayor = buscar_hijo_mayor(sucesor->derecha, padre_del_sucesor);
-
-            hijo_mayor->derecha = nodo_a_borrar->derecha;
+        if (sucesor->derecha) { //sucesor tiene hijo mayor
+            padre_del_sucesor->izquierda = sucesor->derecha;
+            //hijo_mayor->derecha = nodo_a_borrar->derecha;
         }
-    }
+        sucesor->derecha = nodo_a_borrar->derecha;
+      //  padre_del_sucesor->izquierda = NULL;
+    } 
+    //printf("\n nodo a borrar -> izq: %d", *(int*)nodo_a_borrar->izquierda->elemento);
+    //printf("\n nodo a borrar -> der: %d", *(int*)nodo_a_borrar->derecha->elemento);
+    //printf("\n sucesor -> der: %d", *(int*)sucesor->derecha->elemento);
 
     sucesor->izquierda = nodo_a_borrar->izquierda;
+    //printf("\n suc -> izq: %d", *(int*)sucesor->izquierda->elemento);
     return sucesor;
 }
 
 
 void borrar_segun_hijos(abb_t* arbol, nodo_abb_t* nodo_padre, nodo_abb_t* nodo_a_borrar, int hijos, bool es_la_raiz, int comparacion){
     nodo_abb_t* sucesor_a_nodo_borrar = NULL; // nuevo nodo hijo
-    if (hijos == UN_HIJO_D)
+    if (hijos == UN_HIJO_D) {
         sucesor_a_nodo_borrar = nodo_a_borrar->derecha;
-    else if (hijos == UN_HIJO_I)
+       // nodo_a_borrar->derecha = NULL;
+    } else if (hijos == UN_HIJO_I) {
         sucesor_a_nodo_borrar = nodo_a_borrar->izquierda;
+       // nodo_a_borrar->izquierda = NULL;
+    }
     else if (hijos == DOS_HIJOS) {
-       sucesor_a_nodo_borrar = nodo_con_dos_hijos(arbol, nodo_padre, nodo_a_borrar, sucesor_a_nodo_borrar);
+        sucesor_a_nodo_borrar = nodo_con_dos_hijos(arbol, nodo_padre, nodo_a_borrar, sucesor_a_nodo_borrar);
+       // nodo_a_borrar->izquierda = NULL;
+       // nodo_a_borrar->izquierda = NULL;
+
     }
     
-    if (comparacion == MAYOR)  // el nodo a borrar es mayor que su padre
+    arbol->destructor(nodo_a_borrar->elemento);
+    free(nodo_a_borrar);
+    if ((comparacion >= IGUAL) && !es_la_raiz)  // el nodo a borrar es mayor que su padre
         nodo_padre->derecha = sucesor_a_nodo_borrar;
-    else if (comparacion == MENOR) // el nodo a borrar es menor que su padre
+    else if (comparacion <= MENOR) // el nodo a borrar es menor que su padre
         nodo_padre->izquierda = sucesor_a_nodo_borrar;
     if (es_la_raiz) {
         arbol->nodo_raiz = sucesor_a_nodo_borrar;
     }
 
-    arbol->destructor(nodo_a_borrar->elemento);
-    free(nodo_a_borrar);
 }
 
 int nodo_tiene_hijos(nodo_abb_t* nodo_a_borrar) {
@@ -302,10 +352,12 @@ int arbol_borrar(abb_t* arbol, void* elemento) {
     
     if (!nodo_a_borrar) return ERROR;  //el elemento no se encuentra en el arbol
     int hijos = nodo_tiene_hijos(nodo_a_borrar);
-    nodo_padre = buscar_nodo_segun_elemento(arbol->comparador, arbol->nodo_raiz, elemento, ELIMINAR, nodo_padre);
+   // nodo_padre = buscar_nodo_segun_elemento(arbol->comparador, arbol->nodo_raiz, elemento, ELIMINAR, nodo_padre);
+    nodo_padre = buscar_nodo_padre(arbol->comparador, arbol->nodo_raiz, elemento, nodo_padre);
     
-    bool es_la_raiz = !(arbol->comparador(arbol->nodo_raiz->elemento, elemento));
-    int comparacion = arbol->comparador(nodo_padre->elemento, elemento);
+    bool es_la_raiz = !(arbol->comparador(elemento, arbol->nodo_raiz->elemento));
+    //if (es_la_raiz) //printf("Es la raiz");
+    int comparacion = arbol->comparador(elemento, nodo_padre->elemento);
 
     borrar_segun_hijos(arbol, nodo_padre, nodo_a_borrar, hijos, es_la_raiz, comparacion);
 
@@ -316,41 +368,48 @@ int arbol_borrar(abb_t* arbol, void* elemento) {
  * Funcion
  * 
 */
-int insertar_elemento(nodo_abb_t** nodo_raiz, void* elemento) {
+/*
+nodo_abb_t* insertar_elemento( void* elemento) {
 
     nodo_abb_t* nodo = (nodo_abb_t*)calloc(1, sizeof(nodo_abb_t));
-    if (!nodo) return ERROR;
+    if (!nodo) return NULL;
     
     nodo->elemento = elemento;
-    *nodo_raiz = nodo;
+    //nodo_raiz = nodo;
     
-    return EXITO;
-}
+    return nodo;
+}*/
 
 int arbol_insertar(abb_t* arbol, void* elemento) {
     if (!arbol || !elemento) return ERROR;
-    int insertado = ERROR;
+   // nodo_abb_t* insertado = NULL;
+   nodo_abb_t* nodo_aux = (nodo_abb_t*)calloc(1, sizeof(nodo_abb_t));
+    if (!nodo_aux) return ERROR;
+    nodo_aux->elemento = elemento;
+
     if (arbol_vacio(arbol))
-        insertado = insertar_elemento(&arbol->nodo_raiz, elemento);
+        arbol->nodo_raiz = nodo_aux;
     else {
-        nodo_abb_t* nodo = NULL;
-        nodo = buscar_nodo_segun_elemento(arbol->comparador, arbol->nodo_raiz, elemento, INSERTAR, nodo);
+        nodo_abb_t* nodo_padre = NULL;
+        //nodo_padre = buscar_nodo_segun_elemento(arbol->comparador, arbol->nodo_raiz, elemento, INSERTAR, arbol->nodo_raiz);
+        nodo_padre = buscar_nuevo_nodo_padre(arbol->comparador, arbol->nodo_raiz, elemento);
+       // printf("Nuevo padre: %d  y tiene %d hijos.\n", *(int*)nodo_padre->elemento, nodo_tiene_hijos(nodo_padre));
+        
+        if (nodo_padre) { //no tiene hijos
+            int comparacion = arbol->comparador(elemento, nodo_padre->elemento);
 
-        if (nodo) { //no tiene hijos
-            int comparacion = arbol->comparador(nodo->elemento, elemento);
-
-            if ((comparacion == MAYOR || comparacion == IGUAL) && !nodo->derecha){
-    
-                insertado = insertar_elemento(&nodo->derecha, elemento);
-
+            if ((comparacion >= IGUAL) && !nodo_padre->derecha){
+                nodo_padre->derecha = nodo_aux;
             }
-            else if (comparacion == MENOR && !nodo->izquierda)  {
-
-                insertado = insertar_elemento(&nodo->izquierda, elemento);
+            else if (comparacion <= MENOR && !nodo_padre->izquierda)  {
+                nodo_padre->izquierda = nodo_aux;  
             }
+       // printf("Ahora tiene %d hijos.\n",  nodo_tiene_hijos(nodo_padre));
+
         }
+
     }
-    return insertado;
+    return EXITO;
 }
 
 abb_t* arbol_crear(abb_comparador comparador, abb_liberar_elemento destructor) {
