@@ -69,7 +69,7 @@ void pruebas_con_null() {
         //destruir
 
 }
-
+/*
 void pruebas_de_abb_con_4_elementos() { 
     manzana_t* c1= pesar_manzana(1);
     manzana_t* c6= pesar_manzana(6);
@@ -163,7 +163,7 @@ void pruebas_de_abb_con_4_elementos() {
     
     arbol_destruir(abb);
     free(auxiliar);
-   /* 
+   
     pa2m_afirmar(abb_elementos(abb) == 4, "El abb contiene 4 elementos");
     pa2m_afirmar(abb_elemento_en_posicion(abb, 2) != NULL, "Puedo obtener un elemento de una posicion especifica");
     pa2m_afirmar(abb_elemento_en_posicion(abb, 5) == NULL, "Obtengo NULL al acceder a una posicion inexistente");
@@ -172,14 +172,89 @@ void pruebas_de_abb_con_4_elementos() {
     pa2m_afirmar(abb_borrar_de_posicion(abb, 0) == EXITO, "Puedo borrar el primer elemento del abb");
     pa2m_afirmar(abb_elementos(abb) == 2, "El abb contiene 2 elementos");
     pa2m_afirmar(abb_ultimo(abb) != NULL, "Puedo obtener el ultimo elemento del abb");    
-    abb_destruir(abb);*/
+    abb_destruir(abb);
     printf("\n");   
+}*/
+
+void pruebas_de_eliminacion_simple() {   // pruebas de raiz
+    manzana_t* c3= pesar_manzana(3);
+    manzana_t* c5= pesar_manzana(5);
+    manzana_t* c7= pesar_manzana(7);
+    manzana_t* c8= pesar_manzana(8);
+  //  manzana_t* c88= pesar_manzana(8);
+    manzana_t* aux = pesar_manzana(0);
+    abb_t* abb = arbol_crear(&comparador,destructor);
+    
+    pa2m_afirmar(arbol_insertar(abb, c7) == EXITO, "Se pudo insertar el elemento 7"); 
+    pa2m_afirmar(arbol_insertar(abb, c8) == EXITO, "Se pudo insertar el elemento 8"); 
+    aux->peso = 8;
+    pa2m_afirmar(arbol_borrar(abb, aux) == EXITO, "Se pudo borrar el elemento 8 sin hijos");  
+    pa2m_afirmar(arbol_insertar(abb, c5) == EXITO, "Se pudo insertar el elemento 5"); 
+    pa2m_afirmar(arbol_insertar(abb, c3) == EXITO, "Se pudo insertar el elemento 3"); 
+    aux->peso = 5;
+    pa2m_afirmar(arbol_borrar(abb, aux) == EXITO, "Se pudo borrar el elemento 5 con un hijo menor");  
+    aux->peso = 3;
+    pa2m_afirmar(*(int*)(abb->nodo_raiz->izquierda->elemento) == *(int*)aux, "El 3 queda a la izquierda de la raiz"); 
+
+    
+    arbol_destruir(abb);
+    //free(abb);
+    free(aux);
+}
+
+void pruebas_de_abb_nodo_raiz() {   // pruebas de raiz
+    manzana_t* c3= pesar_manzana(3);
+    manzana_t* c5= pesar_manzana(5);
+    manzana_t* c7= pesar_manzana(7);
+    manzana_t* c8= pesar_manzana(8);
+    manzana_t* c88= pesar_manzana(8);
+
+   // manzana_t* c9= pesar_manzana(9);
+    manzana_t* c55= pesar_manzana(5);
+
+    manzana_t* aux = pesar_manzana(0);
+    abb_t* abb = arbol_crear(&comparador,destructor);
+
+    aux->peso = 7; 
+    pa2m_afirmar((arbol_insertar(abb, c7) == EXITO) && (*(int*)abb->nodo_raiz->elemento == *(int*)aux), "Se pudo insertar el elemento 7 como raiz"); 
+    pa2m_afirmar(arbol_borrar(abb, aux) == EXITO, "Se pudo borrar la raiz sin hijos");  
+    pa2m_afirmar(arbol_insertar(abb, c5) == EXITO, "Otra vez pudo insertar un elemento"); 
+    aux->peso = 5;
+    pa2m_afirmar(*(int*)arbol_raiz(abb) == *(int*)aux, "El elemento insertado queda como raiz"); 
+    pa2m_afirmar(arbol_insertar(abb, c3) == EXITO, "Se pudo insertar 3 como elemento menor"); 
+    aux->peso = 3;
+    pa2m_afirmar(*(int*)(abb->nodo_raiz->izquierda->elemento) == *(int*)aux, "El nuevo elemento queda a la izquierda de la raiz"); 
+
+    pa2m_afirmar(arbol_borrar(abb, arbol_raiz(abb)) == EXITO, "Se pudo borrar la raiz aunque tenga un hijo menor"); 
+    pa2m_afirmar(*(int*)arbol_raiz(abb) == *(int*)aux, "El hijo menor quedo como raiz"); 
+    pa2m_afirmar((!abb->nodo_raiz->izquierda && !abb->nodo_raiz->derecha), "Quedo sin hijos"); 
+    aux->peso = 5;
+    pa2m_afirmar(arbol_buscar(abb,aux) == (void*) NULL, "No se encontro el 5");
+    pa2m_afirmar(arbol_borrar(abb, arbol_raiz(abb)) == EXITO, "Se pudo borrar la raiz "); 
+    pa2m_afirmar(arbol_vacio(abb) == true, "El arbol quedo vacio"); 
+  
+    pa2m_afirmar((arbol_insertar(abb, c55) == EXITO) && (*(int*)arbol_raiz(abb) == *(int*)aux), "Inserto 5 como raiz"); 
+   // pa2m_afirmar(arbol_insertar(abb, c3) == EXITO, "Otra vez pudo insertar un elemento"); 
+    pa2m_afirmar(arbol_insertar(abb, c8) == EXITO, "Inserto 8 como hijo mayor"); 
+    aux->peso = 8;
+    pa2m_afirmar(*(int*)(abb->nodo_raiz->derecha->elemento) == *(int*)aux, "El nuevo elemento queda a la derecha de la raiz"); 
+    pa2m_afirmar(arbol_borrar(abb, arbol_raiz(abb)) == EXITO, "Se pudo borrar la raiz con un hijo mayor"); 
+    pa2m_afirmar(*(int*)arbol_raiz(abb) == *(int*)aux, "El 8 quedo como raiz"); 
+    pa2m_afirmar(arbol_insertar(abb, c88) == EXITO, "Inserto elemento igual a la raiz"); 
+    
+    pa2m_afirmar(arbol_borrar(abb, aux) == EXITO, "Se borra correctamente aunque el elemento este repetido"); 
+    
+
+    arbol_destruir(abb);
+    //free(abb);
+    free(aux);
 }
 
 int main() {
 
     pa2m_nuevo_grupo("PRUEBAS DE ARBOL");
-    pruebas_de_abb_con_4_elementos();
+   // pruebas_de_abb_con_4_elementos();
+    pruebas_de_abb_nodo_raiz();
 
     pa2m_nuevo_grupo("PRUEBAS CON NULL");
     pruebas_con_null();
@@ -191,11 +266,11 @@ int main() {
     pruebas_de_abb_vacio();
 
     pa2m_nuevo_grupo("PRUEBAS DE INSERCION SIMPLE");
-    abb_t* abb_simple = pruebas_de_insercion_simple();
+    abb_t* abb_simple = pruebas_de_insercion_simple();*/
 
     pa2m_nuevo_grupo("PRUEBAS DE ELIMINACION SIMPLE");
-    pruebas_de_eliminacion_simple(abb_simple);
-    
+    pruebas_de_eliminacion_simple();
+    /*
     pa2m_nuevo_grupo("PRUEBAS DE INSERCION Y ELIMINACION MULTIPLE");
     abb_t* abb_multiple = pruebas_de_insercion_multiple();
 
