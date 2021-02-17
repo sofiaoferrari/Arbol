@@ -176,12 +176,64 @@ void pruebas_de_abb_con_4_elementos() {
     printf("\n");   
 }*/
 
+void pruebas_de_eliminacion_doble() {   // pruebas de raiz
+    manzana_t* c1= pesar_manzana(1);
+    manzana_t* c2= pesar_manzana(2);
+    manzana_t* c4= pesar_manzana(4);
+    manzana_t* c3= pesar_manzana(3);
+    manzana_t* c5= pesar_manzana(5);
+    manzana_t* c7= pesar_manzana(7);
+    manzana_t* c8= pesar_manzana(8);
+    manzana_t* c22= pesar_manzana(22);
+    manzana_t* c6= pesar_manzana(6);
+    manzana_t* c9= pesar_manzana(9);
+    manzana_t* c10= pesar_manzana(10);
+  //  manzana_t* c88= pesar_manzana(8);
+    manzana_t* aux = pesar_manzana(0);
+    abb_t* abb = arbol_crear(&comparador,destructor);
+    
+    pa2m_afirmar(arbol_insertar(abb, c5) == EXITO, "Se pudo insertar el elemento 5"); 
+    pa2m_afirmar(arbol_insertar(abb, c7) == EXITO, "Se pudo insertar el elemento 7"); 
+    pa2m_afirmar(arbol_insertar(abb, c3) == EXITO, "Se pudo insertar el elemento 3"); 
+    aux->peso = 5;
+    pa2m_afirmar(arbol_borrar(abb, aux) == EXITO, "Se pudo borrar la raiz con dos hijos");  
+    pa2m_afirmar(arbol_buscar(abb,aux) == (void*) NULL, "No se encontro el 5");
+    aux->peso = 3;
+    pa2m_afirmar(*(int*)arbol_raiz(abb) == *(int*)aux, "El 3 quedo como raiz"); 
+    pa2m_afirmar((abb->nodo_raiz->derecha && !abb->nodo_raiz->izquierda), "Quedo sin hijo derecho"); 
+   
+   // pa2m_afirmar((!abb->nodo_raiz->izquierda && !abb->nodo_raiz->derecha), "Quedo sin hijos"); 
+    pa2m_afirmar(arbol_insertar(abb, c2) == EXITO, "Se pudo insertar el elemento 2"); 
+    pa2m_afirmar(arbol_insertar(abb, c1) == EXITO, "Se pudo insertar el elemento 1"); 
+    pa2m_afirmar(arbol_insertar(abb, c4) == EXITO, "Se pudo insertar el elemento 4"); 
+    aux->peso = 2;
+    pa2m_afirmar(arbol_borrar(abb, aux) == EXITO, "Se pudo borrar el elemento 2 con dos hijos"); 
+    pa2m_afirmar(arbol_buscar(abb,aux) == (void*) NULL, "No se encontro el 3");
+    aux->peso = 1;
+    pa2m_afirmar(*(int*)arbol_buscar(abb,aux) == *(int*)aux, "Se encontro el 1");
+
+   // aux->peso = 4;
+    pa2m_afirmar(*(int*)(abb->nodo_raiz->izquierda->elemento) == *(int*)aux, "El 1 queda a la izquierda de la raiz"); 
+    pa2m_afirmar(arbol_insertar(abb, c8) == EXITO, "Se pudo insertar el elemento 8"); 
+    aux->peso = 7;
+    pa2m_afirmar(arbol_borrar(abb, aux) == EXITO, "Se pudo borrar el elemento 7 con dos hijos");
+    pa2m_afirmar(arbol_insertar(abb, c10) == EXITO, "Se pudo insertar el elemento 10"); 
+    pa2m_afirmar(arbol_insertar(abb, c22) == EXITO, "Se pudo insertar el elemento 2"); 
+    pa2m_afirmar(arbol_insertar(abb, c9) == EXITO, "Se pudo insertar el elemento 9"); 
+    pa2m_afirmar(arbol_insertar(abb, c6) == EXITO, "Se pudo insertar el elemento 6");
+     
+    
+    arbol_destruir(abb);
+    //free(abb);
+    free(aux);
+}
+
 void pruebas_de_eliminacion_simple() {   // pruebas de raiz
     manzana_t* c3= pesar_manzana(3);
     manzana_t* c5= pesar_manzana(5);
     manzana_t* c7= pesar_manzana(7);
     manzana_t* c8= pesar_manzana(8);
-  //  manzana_t* c88= pesar_manzana(8);
+    manzana_t* c88= pesar_manzana(8);
     manzana_t* aux = pesar_manzana(0);
     abb_t* abb = arbol_crear(&comparador,destructor);
     
@@ -195,6 +247,9 @@ void pruebas_de_eliminacion_simple() {   // pruebas de raiz
     pa2m_afirmar(arbol_borrar(abb, aux) == EXITO, "Se pudo borrar el elemento 5 con un hijo menor");  
     aux->peso = 3;
     pa2m_afirmar(*(int*)(abb->nodo_raiz->izquierda->elemento) == *(int*)aux, "El 3 queda a la izquierda de la raiz"); 
+    pa2m_afirmar(arbol_insertar(abb, c88) == EXITO, "Se pudo insertar el elemento 8"); 
+    aux->peso = 7;
+   // pa2m_afirmar(arbol_borrar(abb, aux) == EXITO, "Se pudo borrar el elemento 7 con dos hijos");  
 
     
     arbol_destruir(abb);
@@ -270,8 +325,10 @@ int main() {
 
     pa2m_nuevo_grupo("PRUEBAS DE ELIMINACION SIMPLE");
     pruebas_de_eliminacion_simple();
-    /*
+    
     pa2m_nuevo_grupo("PRUEBAS DE INSERCION Y ELIMINACION MULTIPLE");
+    pruebas_de_eliminacion_doble();
+    /*
     abb_t* abb_multiple = pruebas_de_insercion_multiple();
 
     pa2m_nuevo_grupo("PRUEBAS DE RECORRIDO INORDEN");
