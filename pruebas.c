@@ -47,6 +47,31 @@ int comparador(void* elemento1, void* elemento2) {
     return resultado;
 }
 
+bool mostrar_elemento(void* elemento, void* extra){
+    extra=extra; //para que no se queje el compilador, gracias -Werror -Wall
+    if(elemento)
+        printf("%i ", ((manzana_t*)elemento)->peso);
+    return false;
+}
+
+bool mostrar_hasta_5(void* elemento, void* extra){
+    extra=extra; //para que no se queje el compilador, gracias -Werror -Wall
+    if(elemento){
+        printf("%i ", ((manzana_t*)elemento)->peso);
+        if(((manzana_t*)elemento)->peso == 5)
+            return true;
+    }
+    return false;
+}
+
+bool mostrar_acumulado(void* elemento, void* extra){
+    if(elemento && extra){
+        *(int*)extra += ((manzana_t*)elemento)->peso;
+        printf("%i ", *(int*)extra);
+    }
+    return false;
+}
+
 
 /**/
 void pruebas_con_null() {
@@ -174,7 +199,139 @@ void pruebas_de_abb_con_4_elementos() {
     pa2m_afirmar(abb_ultimo(abb) != NULL, "Puedo obtener el ultimo elemento del abb");    
     abb_destruir(abb);
     printf("\n");   
-}*/
+}*//**/
+
+void pruebas_recorrido(){
+    manzana_t* elementos[10];
+     manzana_t* c1= pesar_manzana(10);
+    manzana_t* c2= pesar_manzana(5);
+    manzana_t* c3= pesar_manzana(15);
+    manzana_t* c4= pesar_manzana(12);
+    manzana_t* c5= pesar_manzana(2);
+    manzana_t* c6= pesar_manzana(7);
+    manzana_t* c7= pesar_manzana(1);
+    manzana_t* c8= pesar_manzana(8);
+    manzana_t* c9= pesar_manzana(9);
+   // manzana_t* c10= pesar_manzana(10);
+  //  manzana_t* c22= pesar_manzana(22);
+  //  manzana_t* c88= pesar_manzana(8);
+    manzana_t* aux = pesar_manzana(10);
+    abb_t* arbol = arbol_crear(&comparador,destructor);
+
+    pa2m_afirmar(arbol_insertar(arbol, c1) == EXITO, "Se pudo insertar el elemento 10"); 
+    pa2m_afirmar(arbol_insertar(arbol, c2) == EXITO, "Se pudo insertar el elemento 5"); 
+    pa2m_afirmar(arbol_insertar(arbol, c3) == EXITO, "Se pudo insertar el elemento 15");   
+    pa2m_afirmar(arbol_insertar(arbol, c4) == EXITO, "Se pudo insertar el elemento 12"); 
+    pa2m_afirmar(arbol_insertar(arbol, c5) == EXITO, "Se pudo insertar el elemento 2");   
+    pa2m_afirmar(arbol_insertar(arbol, c6) == EXITO, "Se pudo insertar el elemento 7"); 
+    pa2m_afirmar(arbol_insertar(arbol, c7) == EXITO, "Se pudo insertar el elemento 1"); 
+    pa2m_afirmar(arbol_insertar(arbol, c8) == EXITO, "Se pudo insertar el elemento 8"); 
+    pa2m_afirmar(arbol_insertar(arbol, c9) == EXITO, "Se pudo insertar el elemento 9"); 
+    printf("Recorrido inorden (deberian salir en orden 1 2 5 7 8 9 10 12 15 ): ");
+    size_t cantidad = arbol_recorrido_inorden(arbol, (void**)elementos, 10);
+    for(size_t i=0;i<cantidad;i++)
+        printf("%i ", elementos[i]->peso);
+    printf("\n");
+
+    printf("\n\nPruebo el iterador interno\n\n");
+    
+    printf("Recorrido inorden iterador interno: ");    
+    abb_con_cada_elemento(arbol, ABB_RECORRER_INORDEN, mostrar_elemento, NULL);
+    printf("\n");
+
+    printf("Recorrido preorden iterador interno: ");    
+    abb_con_cada_elemento(arbol, ABB_RECORRER_PREORDEN, mostrar_elemento, NULL);
+    printf("\n");
+    
+    printf("Recorrido postorden iterador interno: ");    
+    abb_con_cada_elemento(arbol, ABB_RECORRER_POSTORDEN, mostrar_elemento, NULL);
+    printf("\n");
+
+    printf("\nRecorrido inorden hasta encontrar el 5: ");    
+    abb_con_cada_elemento(arbol, ABB_RECORRER_INORDEN, mostrar_hasta_5, NULL);
+    printf("\n");
+
+    printf("Recorrido preorden hasta encontrar el 5: ");    
+    abb_con_cada_elemento(arbol, ABB_RECORRER_PREORDEN, mostrar_hasta_5, NULL);
+    printf("\n");
+
+    printf("Recorrido postorden hasta encontrar el 5: ");    
+    abb_con_cada_elemento(arbol, ABB_RECORRER_POSTORDEN, mostrar_hasta_5, NULL);
+    printf("\n");
+
+    int acumulador=0;
+    printf("\nRecorrido inorden acumulando los valores: ");    
+    abb_con_cada_elemento(arbol, ABB_RECORRER_INORDEN, mostrar_acumulado, &acumulador);
+    printf("\n");
+
+    acumulador=0;
+    printf("Recorrido preorden acumulando los valores: ");    
+    abb_con_cada_elemento(arbol, ABB_RECORRER_PREORDEN, mostrar_acumulado, &acumulador);
+    printf("\n");
+
+    acumulador=0;
+    printf("Recorrido postorden acumulando los valores: ");    
+    abb_con_cada_elemento(arbol, ABB_RECORRER_POSTORDEN, mostrar_acumulado, &acumulador);
+    printf("\n");
+   
+    free(aux);
+    arbol_destruir(arbol);
+}
+
+void pruebas_de_abb_raiz(){
+    manzana_t* c1= pesar_manzana(10);
+    manzana_t* c2= pesar_manzana(5);
+    manzana_t* c3= pesar_manzana(15);
+    manzana_t* c4= pesar_manzana(12);
+    manzana_t* c5= pesar_manzana(2);
+    manzana_t* c6= pesar_manzana(7);
+    manzana_t* c7= pesar_manzana(1);
+    manzana_t* c8= pesar_manzana(8);
+    manzana_t* c9= pesar_manzana(9);
+   // manzana_t* c10= pesar_manzana(10);
+  //  manzana_t* c22= pesar_manzana(22);
+  //  manzana_t* c88= pesar_manzana(8);
+    manzana_t* aux = pesar_manzana(10);
+    abb_t* abb = arbol_crear(&comparador,destructor);
+
+    pa2m_afirmar(arbol_insertar(abb, c1) == EXITO, "Se pudo insertar el elemento 10"); 
+    pa2m_afirmar(arbol_insertar(abb, c2) == EXITO, "Se pudo insertar el elemento 5"); 
+    pa2m_afirmar(arbol_insertar(abb, c3) == EXITO, "Se pudo insertar el elemento 15");   
+    pa2m_afirmar(arbol_insertar(abb, c4) == EXITO, "Se pudo insertar el elemento 12"); 
+    pa2m_afirmar(arbol_insertar(abb, c5) == EXITO, "Se pudo insertar el elemento 2");   
+    pa2m_afirmar(arbol_insertar(abb, c6) == EXITO, "Se pudo insertar el elemento 7"); 
+    pa2m_afirmar(arbol_insertar(abb, c7) == EXITO, "Se pudo insertar el elemento 1"); 
+    pa2m_afirmar(arbol_insertar(abb, c8) == EXITO, "Se pudo insertar el elemento 8"); 
+    pa2m_afirmar(arbol_insertar(abb, c9) == EXITO, "Se pudo insertar el elemento 9"); 
+    
+    pa2m_afirmar(arbol_borrar(abb, aux) == EXITO, "Se pudo borrar la raiz"); 
+    aux->peso = 9;
+    pa2m_afirmar(*(int*)arbol_raiz(abb) == *(int*)aux, "El predecesor quedo como raiz"); 
+    pa2m_afirmar((abb->nodo_raiz->izquierda && abb->nodo_raiz->derecha), "Quedo con dos hijos"); 
+    aux->peso = 15;
+    pa2m_afirmar((*(int*) abb->nodo_raiz->derecha->elemento == *(int*)aux), "El hijo derecho es el esperado");
+    pa2m_afirmar(arbol_borrar(abb, arbol_raiz(abb)) == EXITO, "Se pudo borrar la raiz"); 
+    aux->peso = 8;
+    pa2m_afirmar(*(int*)arbol_raiz(abb) == *(int*)aux, "El predecesor quedo como raiz"); 
+    pa2m_afirmar((abb->nodo_raiz->izquierda && abb->nodo_raiz->derecha), "Quedo con dos hijos");
+    aux->peso = 15;
+    pa2m_afirmar((*(int*) abb->nodo_raiz->derecha->elemento == *(int*)aux), "El hijo derecho es el esperado");
+    pa2m_afirmar(arbol_borrar(abb, arbol_raiz(abb)) == EXITO, "Se pudo borrar la raiz"); 
+    aux->peso = 7;
+    pa2m_afirmar(*(int*)arbol_raiz(abb) == *(int*)aux, "El predecesor quedo como raiz"); 
+    pa2m_afirmar((abb->nodo_raiz->izquierda && abb->nodo_raiz->derecha), "Quedo con dos hijos");
+    aux->peso = 15;
+    pa2m_afirmar((*(int*) abb->nodo_raiz->derecha->elemento == *(int*)aux), "El hijo derecho es el esperado");
+    pa2m_afirmar(arbol_borrar(abb, arbol_raiz(abb)) == EXITO, "Se pudo borrar la raiz"); 
+    pa2m_afirmar(arbol_borrar(abb, arbol_raiz(abb)) == EXITO, "Se pudo borrar la raiz"); 
+    pa2m_afirmar(arbol_borrar(abb, arbol_raiz(abb)) == EXITO, "Se pudo borrar la raiz"); 
+    pa2m_afirmar(arbol_borrar(abb, arbol_raiz(abb)) == EXITO, "Se pudo borrar la raiz"); 
+    pa2m_afirmar(arbol_borrar(abb, arbol_raiz(abb)) == EXITO, "Se pudo borrar la raiz"); 
+    pa2m_afirmar(arbol_borrar(abb, arbol_raiz(abb)) == EXITO, "Se pudo borrar la raiz"); 
+    arbol_destruir(abb);
+    free(aux);
+    }
+
 
 void pruebas_de_eliminacion_doble() {   // pruebas de raiz
     manzana_t* c1= pesar_manzana(1);
@@ -201,27 +358,42 @@ void pruebas_de_eliminacion_doble() {   // pruebas de raiz
     aux->peso = 3;
     pa2m_afirmar(*(int*)arbol_raiz(abb) == *(int*)aux, "El 3 quedo como raiz"); 
     pa2m_afirmar((abb->nodo_raiz->derecha && !abb->nodo_raiz->izquierda), "Quedo sin hijo derecho"); 
+    pa2m_afirmar(arbol_borrar(abb, aux) == EXITO, "Se pudo borrar la raiz"); 
+    aux->peso = 7;
+    pa2m_afirmar(*(int*)arbol_raiz(abb) == *(int*)aux, "El 7 quedo como raiz"); 
+    pa2m_afirmar((!abb->nodo_raiz->izquierda && !abb->nodo_raiz->derecha), "Quedo sin hijos"); 
    
-   // pa2m_afirmar((!abb->nodo_raiz->izquierda && !abb->nodo_raiz->derecha), "Quedo sin hijos"); 
     pa2m_afirmar(arbol_insertar(abb, c2) == EXITO, "Se pudo insertar el elemento 2"); 
     pa2m_afirmar(arbol_insertar(abb, c1) == EXITO, "Se pudo insertar el elemento 1"); 
     pa2m_afirmar(arbol_insertar(abb, c4) == EXITO, "Se pudo insertar el elemento 4"); 
-    aux->peso = 2;
-    pa2m_afirmar(arbol_borrar(abb, aux) == EXITO, "Se pudo borrar el elemento 2 con dos hijos"); 
-    pa2m_afirmar(arbol_buscar(abb,aux) == (void*) NULL, "No se encontro el 3");
+    pa2m_afirmar(arbol_insertar(abb, c8) == EXITO, "Se pudo insertar el elemento 8"); 
+    pa2m_afirmar(arbol_borrar(abb, aux) == EXITO, "Se pudo borrar el elemento 7 con dos hijos");
+    pa2m_afirmar(arbol_buscar(abb,aux) == (void*) NULL, "No se encontro el 7");
+    aux->peso = 4;
+    pa2m_afirmar(*(int*)arbol_raiz(abb) == *(int*)aux, "El 4 quedo como raiz"); 
+
     aux->peso = 1;
     pa2m_afirmar(*(int*)arbol_buscar(abb,aux) == *(int*)aux, "Se encontro el 1");
 
-   // aux->peso = 4;
-    pa2m_afirmar(*(int*)(abb->nodo_raiz->izquierda->elemento) == *(int*)aux, "El 1 queda a la izquierda de la raiz"); 
-    pa2m_afirmar(arbol_insertar(abb, c8) == EXITO, "Se pudo insertar el elemento 8"); 
+  //  pa2m_afirmar(*(int*)(abb->nodo_raiz->izquierda->elemento) == *(int*)aux, "El 1 queda a la izquierda de la raiz"); 
+    pa2m_afirmar(arbol_insertar(abb, c6) == EXITO, "Se pudo insertar el elemento 6");
     aux->peso = 7;
-    pa2m_afirmar(arbol_borrar(abb, aux) == EXITO, "Se pudo borrar el elemento 7 con dos hijos");
+    aux->peso = 6;
+
+   // pa2m_afirmar(*(int*)(abb->nodo_raiz->izquierda->elemento) == *(int*)aux, "El 6 queda a la derecha de la raiz"); 
+
     pa2m_afirmar(arbol_insertar(abb, c10) == EXITO, "Se pudo insertar el elemento 10"); 
     pa2m_afirmar(arbol_insertar(abb, c22) == EXITO, "Se pudo insertar el elemento 2"); 
     pa2m_afirmar(arbol_insertar(abb, c9) == EXITO, "Se pudo insertar el elemento 9"); 
-    pa2m_afirmar(arbol_insertar(abb, c6) == EXITO, "Se pudo insertar el elemento 6");
-     
+    aux->peso = 3;
+  //  pa2m_afirmar(arbol_borrar(abb, aux) == EXITO, "Se pudo borrar la raiz");
+    aux->peso = 2;
+
+   // aux->peso = 1;
+  //  pa2m_afirmar(*(int*)arbol_raiz(abb) == *(int*)aux, "El 1 quedo como raiz"); 
+    pa2m_afirmar(arbol_borrar(abb, aux) == EXITO, "Se pudo borrar la raiz 2");
+
+    //pa2m_afirmar(*(int*)arbol_raiz(abb) == *(int*)aux, "El 1 quedo como raiz");
     
     arbol_destruir(abb);
     //free(abb);
@@ -313,9 +485,10 @@ int main() {
 
     pa2m_nuevo_grupo("PRUEBAS CON NULL");
     pruebas_con_null();
+
+    pa2m_nuevo_grupo("PRUEBAS DE ABB RAIZ");
+    pruebas_de_abb_raiz();
   /*  
-    pa2m_nuevo_grupo("PRUEBAS DE ABB CON UN UNICO ELEMENTO");
-    pruebas_de_abb_unitaro();
 
     pa2m_nuevo_grupo("PRUEBAS DE ABB VACIO");
     pruebas_de_abb_vacio();
@@ -330,19 +503,10 @@ int main() {
     pruebas_de_eliminacion_doble();
     /*
     abb_t* abb_multiple = pruebas_de_insercion_multiple();
-
-    pa2m_nuevo_grupo("PRUEBAS DE RECORRIDO INORDEN");
-    pruebas_de_inorden();
-
-    pa2m_nuevo_grupo("PRUEBAS DE RECORRIDO PREORDEN");
-    pruebas_de_preorden();
-
-    pa2m_nuevo_grupo("PRUEBAS DE RECORRIDO POSTORDEN");
-    pruebas_de_postorden();
-    
-    pa2m_nuevo_grupo("PRUEBAS DE ITERADOR"); 
-    pruebas_de_iterador();
 */
+    pa2m_nuevo_grupo("PRUEBAS DE RECORRIDO INORDEN");
+    pruebas_recorrido();
+
     pa2m_mostrar_reporte();
     return EXITO;
 }
