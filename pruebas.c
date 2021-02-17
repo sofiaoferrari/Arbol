@@ -323,11 +323,33 @@ void pruebas_de_abb_raiz(){
     aux->peso = 15;
     pa2m_afirmar((*(int*) abb->nodo_raiz->derecha->elemento == *(int*)aux), "El hijo derecho es el esperado");
     pa2m_afirmar(arbol_borrar(abb, arbol_raiz(abb)) == EXITO, "Se pudo borrar la raiz"); 
+    aux->peso = 5;
+    pa2m_afirmar(*(int*)arbol_raiz(abb) == *(int*)aux, "El predecesor quedo como raiz"); 
+    pa2m_afirmar((abb->nodo_raiz->izquierda && abb->nodo_raiz->derecha), "Quedo con dos hijos");
+    aux->peso = 15;
+    pa2m_afirmar((*(int*) abb->nodo_raiz->derecha->elemento == *(int*)aux), "El hijo derecho es el esperado");
+    aux->peso = 2;
+    pa2m_afirmar((*(int*) abb->nodo_raiz->izquierda->elemento == *(int*)aux), "El hijo izquierdo es el esperado");
+    pa2m_afirmar(arbol_borrar(abb, arbol_raiz(abb)) == EXITO, "Se pudo borrar la raiz"); 
+   // aux->peso = ;
+    pa2m_afirmar(*(int*)arbol_raiz(abb) == *(int*)aux, "El predecesor quedo como raiz"); 
+    pa2m_afirmar((abb->nodo_raiz->izquierda && abb->nodo_raiz->derecha), "Quedo con dos hijos");
+    aux->peso = 15;
+    pa2m_afirmar((*(int*) abb->nodo_raiz->derecha->elemento == *(int*)aux), "El hijo derecho es el esperado");
+    aux->peso = 1;
+    pa2m_afirmar((*(int*) abb->nodo_raiz->izquierda->elemento == *(int*)aux), "El hijo izquierdo es el esperado");
+    pa2m_afirmar(arbol_borrar(abb, arbol_raiz(abb)) == EXITO, "Se pudo borrar la raiz"); 
+    pa2m_afirmar(*(int*)arbol_raiz(abb) == *(int*)aux, "El predecesor quedo como raiz"); 
+    pa2m_afirmar((!abb->nodo_raiz->izquierda && abb->nodo_raiz->derecha), "Quedo con un hijo mayor");
+    aux->peso = 15;
+    pa2m_afirmar((*(int*) abb->nodo_raiz->derecha->elemento == *(int*)aux), "El hijo derecho es el esperado");
+   // aux->peso = ;
+   // pa2m_afirmar(!abb->nodo_raiz->izquierda, "Queda sin hijo izquierdo");
     pa2m_afirmar(arbol_borrar(abb, arbol_raiz(abb)) == EXITO, "Se pudo borrar la raiz"); 
     pa2m_afirmar(arbol_borrar(abb, arbol_raiz(abb)) == EXITO, "Se pudo borrar la raiz"); 
     pa2m_afirmar(arbol_borrar(abb, arbol_raiz(abb)) == EXITO, "Se pudo borrar la raiz"); 
-    pa2m_afirmar(arbol_borrar(abb, arbol_raiz(abb)) == EXITO, "Se pudo borrar la raiz"); 
-    pa2m_afirmar(arbol_borrar(abb, arbol_raiz(abb)) == EXITO, "Se pudo borrar la raiz"); 
+    pa2m_afirmar(arbol_vacio(abb) == true, "El abb esta vacio");
+
     arbol_destruir(abb);
     free(aux);
     }
@@ -377,7 +399,7 @@ void pruebas_de_eliminacion_doble() {   // pruebas de raiz
 
   //  pa2m_afirmar(*(int*)(abb->nodo_raiz->izquierda->elemento) == *(int*)aux, "El 1 queda a la izquierda de la raiz"); 
     pa2m_afirmar(arbol_insertar(abb, c6) == EXITO, "Se pudo insertar el elemento 6");
-    aux->peso = 7;
+   // aux->peso = 7;
     aux->peso = 6;
 
    // pa2m_afirmar(*(int*)(abb->nodo_raiz->izquierda->elemento) == *(int*)aux, "El 6 queda a la derecha de la raiz"); 
@@ -385,7 +407,7 @@ void pruebas_de_eliminacion_doble() {   // pruebas de raiz
     pa2m_afirmar(arbol_insertar(abb, c10) == EXITO, "Se pudo insertar el elemento 10"); 
     pa2m_afirmar(arbol_insertar(abb, c22) == EXITO, "Se pudo insertar el elemento 2"); 
     pa2m_afirmar(arbol_insertar(abb, c9) == EXITO, "Se pudo insertar el elemento 9"); 
-    aux->peso = 3;
+  //  aux->peso = 3;
   //  pa2m_afirmar(arbol_borrar(abb, aux) == EXITO, "Se pudo borrar la raiz");
     aux->peso = 2;
 
