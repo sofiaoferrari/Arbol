@@ -288,11 +288,14 @@ void pruebas_de_abb_raiz_con_duplicado(){
     manzana_t* c7= pesar_manzana(1);
     manzana_t* c8= pesar_manzana(8);
     manzana_t* c9= pesar_manzana(9);
-    manzana_t* c55= pesar_manzana(5);
-  //  manzana_t* c22= pesar_manzana(22);
-  //  manzana_t* c88= pesar_manzana(8);
+    manzana_t* c10= pesar_manzana(5);
+    manzana_t* c11= pesar_manzana(8);
+    manzana_t* c12= pesar_manzana(15);
+    manzana_t* c13= pesar_manzana(13);
+    manzana_t* c14= pesar_manzana(10);
+
     manzana_t* aux = pesar_manzana(10);
-    abb_t* abb = arbol_crear(&comparador,destructor);
+    abb_t* abb = arbol_crear(&comparador,&destructor);
 
     pa2m_afirmar(arbol_insertar(abb, c1) == EXITO, "Se pudo insertar el elemento 10"); 
     pa2m_afirmar(arbol_insertar(abb, c2) == EXITO, "Se pudo insertar el elemento 5"); 
@@ -303,55 +306,41 @@ void pruebas_de_abb_raiz_con_duplicado(){
     pa2m_afirmar(arbol_insertar(abb, c7) == EXITO, "Se pudo insertar el elemento 1"); 
     pa2m_afirmar(arbol_insertar(abb, c8) == EXITO, "Se pudo insertar el elemento 8"); 
     pa2m_afirmar(arbol_insertar(abb, c9) == EXITO, "Se pudo insertar el elemento 9"); 
-    pa2m_afirmar(arbol_insertar(abb, c55) == EXITO, "Se pudo insertar el elemento 5"); 
+    pa2m_afirmar(arbol_insertar(abb, c10) == EXITO, "Se pudo insertar el elemento 5"); 
+    pa2m_afirmar(arbol_insertar(abb, c11) == EXITO, "Se pudo insertar el elemento 8"); 
+    pa2m_afirmar(arbol_insertar(abb, c12) == EXITO, "Se pudo insertar el elemento 15"); 
+    pa2m_afirmar(arbol_insertar(abb, c13) == EXITO, "Se pudo insertar el elemento 13"); 
+    pa2m_afirmar(arbol_insertar(abb, c14) == EXITO, "Se pudo insertar el elemento 10"); 
+
     
     pa2m_afirmar(arbol_borrar(abb, aux) == EXITO, "Se pudo borrar la raiz"); 
     aux->peso = 9;
     pa2m_afirmar(*(int*)arbol_raiz(abb) == *(int*)aux, "El predecesor quedo como raiz"); 
     pa2m_afirmar((abb->nodo_raiz->izquierda && abb->nodo_raiz->derecha), "Quedo con dos hijos"); 
-    aux->peso = 15;
-    pa2m_afirmar((*(int*) abb->nodo_raiz->derecha->elemento == *(int*)aux), "El hijo derecho es el esperado");
+    pa2m_afirmar((*(int*)abb->nodo_raiz->elemento == *(int*)aux), "es9"); 
     pa2m_afirmar(arbol_borrar(abb, arbol_raiz(abb)) == EXITO, "Se pudo borrar la raiz"); 
     aux->peso = 8;
     pa2m_afirmar(*(int*)arbol_raiz(abb) == *(int*)aux, "El predecesor quedo como raiz"); 
-    pa2m_afirmar((abb->nodo_raiz->izquierda && abb->nodo_raiz->derecha), "Quedo con dos hijos");
-    aux->peso = 15;
-    pa2m_afirmar((*(int*) abb->nodo_raiz->derecha->elemento == *(int*)aux), "El hijo derecho es el esperado");
     pa2m_afirmar(arbol_borrar(abb, arbol_raiz(abb)) == EXITO, "Se pudo borrar la raiz"); 
+    pa2m_afirmar(*(int*)arbol_raiz(abb) == *(int*)aux, "El predecesor quedo como raiz"); 
+    pa2m_afirmar(arbol_borrar(abb, arbol_raiz(abb)) == EXITO, "Se pudo borrar la raiz");
     aux->peso = 7;
     pa2m_afirmar(*(int*)arbol_raiz(abb) == *(int*)aux, "El predecesor quedo como raiz"); 
-    pa2m_afirmar((abb->nodo_raiz->izquierda && abb->nodo_raiz->derecha), "Quedo con dos hijos");
-    aux->peso = 5;
-    pa2m_afirmar((*(int*) abb->nodo_raiz->izquierda->derecha->elemento == *(int*)aux), "El hijo menor del 7 quedo como hijo mayor del 5");
-
-    aux->peso = 15;
-    pa2m_afirmar((*(int*) abb->nodo_raiz->derecha->elemento == *(int*)aux), "El hijo derecho es el esperado");
     pa2m_afirmar(arbol_borrar(abb, arbol_raiz(abb)) == EXITO, "Se pudo borrar la raiz"); 
     aux->peso = 5;
     pa2m_afirmar(*(int*)arbol_raiz(abb) == *(int*)aux, "El predecesor quedo como raiz"); 
-    pa2m_afirmar((abb->nodo_raiz->izquierda && abb->nodo_raiz->derecha), "Quedo con dos hijos");
-    aux->peso = 15;
-    pa2m_afirmar((*(int*) abb->nodo_raiz->derecha->elemento == *(int*)aux), "El hijo derecho es el esperado");
-    aux->peso = 2;
-    pa2m_afirmar((*(int*) abb->nodo_raiz->izquierda->elemento == *(int*)aux), "El hijo izquierdo es el esperado");
     pa2m_afirmar(arbol_borrar(abb, arbol_raiz(abb)) == EXITO, "Se pudo borrar la raiz"); //
     pa2m_afirmar(*(int*)arbol_raiz(abb) == *(int*)aux, "El predecesor quedo como raiz"); 
-    pa2m_afirmar((abb->nodo_raiz->izquierda && abb->nodo_raiz->derecha), "Quedo con dos hijos");
-    aux->peso = 15;
-    pa2m_afirmar((*(int*) abb->nodo_raiz->derecha->elemento == *(int*)aux), "El hijo derecho es el esperado");
-    aux->peso = 1;
-    pa2m_afirmar((*(int*) abb->nodo_raiz->izquierda->elemento == *(int*)aux), "El hijo izquierdo es el esperado");
-    pa2m_afirmar(arbol_borrar(abb, arbol_raiz(abb)) == EXITO, "Se pudo borrar la raiz"); 
+    pa2m_afirmar(arbol_borrar(abb, arbol_raiz(abb)) == EXITO, "Se pudo borrar la raiz");
+    aux->peso = 2; 
     pa2m_afirmar(*(int*)arbol_raiz(abb) == *(int*)aux, "El predecesor quedo como raiz"); 
-    pa2m_afirmar((!abb->nodo_raiz->izquierda && abb->nodo_raiz->derecha), "Quedo con un hijo mayor");
-    aux->peso = 15;
-    pa2m_afirmar((*(int*) abb->nodo_raiz->derecha->elemento == *(int*)aux), "El hijo derecho es el esperado");
-   // aux->peso = ;
-   // pa2m_afirmar(!abb->nodo_raiz->izquierda, "Queda sin hijo izquierdo");
     pa2m_afirmar(arbol_borrar(abb, arbol_raiz(abb)) == EXITO, "Se pudo borrar la raiz"); 
     pa2m_afirmar(arbol_borrar(abb, arbol_raiz(abb)) == EXITO, "Se pudo borrar la raiz"); 
     pa2m_afirmar(arbol_borrar(abb, arbol_raiz(abb)) == EXITO, "Se pudo borrar la raiz"); 
-
+    pa2m_afirmar(arbol_borrar(abb, arbol_raiz(abb)) == EXITO, "Se pudo borrar la raiz"); 
+    pa2m_afirmar(arbol_borrar(abb, arbol_raiz(abb)) == EXITO, "Se pudo borrar la raiz"); 
+    pa2m_afirmar(arbol_borrar(abb, arbol_raiz(abb)) == EXITO, "Se pudo borrar la raiz"); 
+    pa2m_afirmar(arbol_borrar(abb, arbol_raiz(abb)) == EXITO, "Se pudo borrar la raiz"); 
     pa2m_afirmar(arbol_vacio(abb) == true, "El abb esta vacio");
 
     arbol_destruir(abb);
@@ -588,8 +577,9 @@ int main() {
 
     pa2m_nuevo_grupo("PRUEBAS DE ABB RAIZ");
     pruebas_de_abb_raiz();
-    printf("\n\n");
-     pruebas_de_abb_raiz2();
+    
+    pa2m_nuevo_grupo("PRUEBAS DE ABB RAIZ CON ELEMENTOS DUPLICADOS");
+    pruebas_de_abb_raiz_con_duplicado();
 
   /*  
 
