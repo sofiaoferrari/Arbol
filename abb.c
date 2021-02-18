@@ -28,28 +28,11 @@ void* arbol_raiz(abb_t* arbol) {
     return arbol->nodo_raiz->elemento;
 }
 
-void iterador_interno_inorden(nodo_abb_t* nodo, bool (*funcion)(void*,void*), bool* resultado_funcion, void* extra, size_t* elementos_recorridos){
-    if(!nodo || (*resultado_funcion == true)) return;
-
-    iterador_interno_inorden(nodo->izquierda, funcion, resultado_funcion, extra, elementos_recorridos);
-    if(*resultado_funcion == true) return;
-    (*elementos_recorridos)++;
-    *resultado_funcion = (*funcion)(nodo->elemento,extra);
-    iterador_interno_inorden(nodo->derecha, funcion, resultado_funcion, extra, elementos_recorridos);
-}
-
-
-void iterador_interno_preorden(nodo_abb_t* nodo, bool (*funcion)(void*,void*), bool* resultado_funcion, void* extra, size_t* elementos_recorridos){
-    if(!nodo || (*resultado_funcion == true)) return;
-
-    (*elementos_recorridos)++;
-    *resultado_funcion = (*funcion)(nodo->elemento,extra);
-    iterador_interno_preorden(nodo->izquierda, funcion, resultado_funcion, extra, elementos_recorridos);
-    if(*resultado_funcion == true) return;
-    iterador_interno_preorden(nodo->derecha, funcion, resultado_funcion, extra, elementos_recorridos);
-}
-
-
+/* Iterador interno. Recorre el arbol en secuencia postorden e invoca la funcion con cada 
+ * elemento del mismo. El puntero 'extra' se pasa como segundo parámetro a la función. Si 
+ * la función devuelve true, se finaliza el recorrido aun si quedan elementos por recorrer. 
+ * Si devuelve false se sigue recorriendo mientras queden elementos.
+ */
 void iterador_interno_postorden(nodo_abb_t* nodo, bool (*funcion)(void*,void*), bool* resultado_funcion, void* extra, size_t* elementos_recorridos){
     if(!nodo || (*resultado_funcion == true)) return;
 
@@ -61,6 +44,35 @@ void iterador_interno_postorden(nodo_abb_t* nodo, bool (*funcion)(void*,void*), 
     (*elementos_recorridos)++;
 }
 
+/* Iterador interno. Recorre el arbol en secuencia preorden e invoca la funcion con cada 
+ * elemento del mismo. El puntero 'extra' se pasa como segundo parámetro a la función. Si 
+ * la función devuelve true, se finaliza el recorrido aun si quedan elementos por recorrer. 
+ * Si devuelve false se sigue recorriendo mientras queden elementos.
+ */
+void iterador_interno_preorden(nodo_abb_t* nodo, bool (*funcion)(void*,void*), bool* resultado_funcion, void* extra, size_t* elementos_recorridos){
+    if(!nodo || (*resultado_funcion == true)) return;
+
+    (*elementos_recorridos)++;
+    *resultado_funcion = (*funcion)(nodo->elemento,extra);
+    iterador_interno_preorden(nodo->izquierda, funcion, resultado_funcion, extra, elementos_recorridos);
+    if(*resultado_funcion == true) return;
+    iterador_interno_preorden(nodo->derecha, funcion, resultado_funcion, extra, elementos_recorridos);
+}
+
+/* Iterador interno. Recorre el arbol en secuencia inorden e invoca la funcion con cada 
+ * elemento del mismo. El puntero 'extra' se pasa como segundo parámetro a la función. Si 
+ * la función devuelve true, se finaliza el recorrido aun si quedan elementos por recorrer. 
+ * Si devuelve false se sigue recorriendo mientras queden elementos.
+ */
+void iterador_interno_inorden(nodo_abb_t* nodo, bool (*funcion)(void*,void*), bool* resultado_funcion, void* extra, size_t* elementos_recorridos){
+    if(!nodo || (*resultado_funcion == true)) return;
+
+    iterador_interno_inorden(nodo->izquierda, funcion, resultado_funcion, extra, elementos_recorridos);
+    if(*resultado_funcion == true) return;
+    (*elementos_recorridos)++;
+    *resultado_funcion = (*funcion)(nodo->elemento,extra);
+    iterador_interno_inorden(nodo->derecha, funcion, resultado_funcion, extra, elementos_recorridos);
+}
 
 size_t abb_con_cada_elemento(abb_t* arbol, int recorrido, bool (*funcion)(void*, void*), void* extra){
     if(!arbol || !funcion) return VACIO;
@@ -193,7 +205,6 @@ nodo_abb_t* buscar_nuevo_nodo_padre(abb_comparador comparador, nodo_abb_t* nuevo
     else if (comparacion <= MENOR && nuevo_padre->izquierda)
         nuevo_padre = buscar_nuevo_nodo_padre(comparador, nuevo_padre->izquierda, elemento);
 
-    //printf("nuevo padre: %d\n", *(int*)nuevo_padre->elemento);
     return nuevo_padre;
 }
 
@@ -265,17 +276,14 @@ nodo_abb_t* elemento_predecesor_inorden(nodo_abb_t* nodo_hijo) {
 }
 
 /*
- * Funcion recursiva que dado un nodo a borrar, busca su predecesor inorden para luego encontrar
- * el padre de dicho predecesor y devolverlo.
+ * Funcion recursiva que dado un nodo predecesor encuentra su padre.
 */
-nodo_abb_t* elemento_padre_predecesor_inorden(nodo_abb_t* padre_del_sucesor, nodo_abb_t* sucesor) { 
+nodo_abb_t* elemento_padre_predecesor_inorden(nodo_abb_t* padre_del_predecesor, nodo_abb_t* predecesor) { 
    
-    if (padre_del_sucesor->derecha) {
-        if (!(padre_del_sucesor->derecha == sucesor)) 
-            padre_del_sucesor = elemento_padre_predecesor_inorden(padre_del_sucesor->derecha, sucesor);
-    }
-    //printf("-Padre del Predecesor: %d\n", *(int*)padre_del_sucesor->elemento);
-    return padre_del_sucesor;
+    if (!(padre_del_predecesor->derecha == predecesor)) 
+            padre_del_predecesor = elemento_padre_predecesor_inorden(padre_del_predecesor->derecha, predecesor);
+
+    return padre_del_predecesor;
 }
 
 /*
@@ -304,7 +312,6 @@ int arbol_borrar(abb_t* arbol, void* elemento) {
     int hijos = nodo_tiene_hijos(nodo_a_borrar);
     nodo_padre = buscar_nodo_padre(arbol->comparador, arbol->nodo_raiz, elemento, nodo_padre);
     bool es_la_raiz = !(arbol->comparador(elemento, arbol->nodo_raiz->elemento)); // el elemento a borrar es la raiz
-    //printf("es la raiz: %d\n", es_la_raiz);
     int comparacion = arbol->comparador(elemento, nodo_padre->elemento);
     nodo_abb_t* predecesor = NULL;
     
@@ -312,20 +319,17 @@ int arbol_borrar(abb_t* arbol, void* elemento) {
         nodo_abb_t* padre_del_predecesor = nodo_a_borrar;
         predecesor = elemento_predecesor_inorden(nodo_a_borrar->izquierda);
         bool hijo_es_predecesor = (predecesor == nodo_a_borrar->izquierda);
-        //printf("hijo es Predecesor: %d\n", hijo_es_predecesor);
-
         predecesor->derecha = nodo_a_borrar->derecha; 
         if (!hijo_es_predecesor) {  //si el hijo del nodo a borrar NO es el nodo predecesor
             padre_del_predecesor = elemento_padre_predecesor_inorden(nodo_a_borrar->izquierda, predecesor);
             padre_del_predecesor->derecha = predecesor->izquierda; 
             predecesor->izquierda = nodo_a_borrar->izquierda;
         }
-    //printf("Padre del Predecesor: %d\n", *(int*)padre_del_predecesor->elemento);
     } else if (hijos == UN_HIJO_D) 
         predecesor = nodo_a_borrar->derecha; 
     else if (hijos == UN_HIJO_I)
         predecesor = nodo_a_borrar->izquierda;
-    //if (predecesor)  printf("Predecesor: %d\n", *(int*)predecesor->elemento);
+    
     if (es_la_raiz) //si el elemento a ser borrado es la raiz
         arbol->nodo_raiz =  predecesor;
     else if (comparacion >= IGUAL)  //si el elemento a ser borrado es mayor o igual que su nodo padre
@@ -336,7 +340,7 @@ int arbol_borrar(abb_t* arbol, void* elemento) {
     if(arbol->destructor)
         arbol->destructor(nodo_a_borrar->elemento);
     free(nodo_a_borrar);
-    //if (arbol->nodo_raiz) printf("\nRAIZ: %d\n", *(int*)arbol->nodo_raiz->elemento);
+
     return EXITO;
 }
 
@@ -352,9 +356,8 @@ int arbol_insertar(abb_t* arbol, void* elemento) {
     else {
         nodo_abb_t* nodo_padre = NULL;
         nodo_padre = buscar_nuevo_nodo_padre(arbol->comparador, arbol->nodo_raiz, elemento);
-        if (nodo_padre) { //no tiene hijos
+        if (nodo_padre) {
             int comparacion = arbol->comparador(elemento, nodo_padre->elemento);
-
             if ((comparacion >= IGUAL) && !nodo_padre->derecha)
                 nodo_padre->derecha = nodo_aux;
             else if (comparacion <= MENOR && !nodo_padre->izquierda)  
