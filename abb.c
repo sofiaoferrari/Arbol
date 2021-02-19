@@ -302,18 +302,15 @@ int nodo_tiene_hijos(nodo_abb_t* nodo_a_borrar) {
     return hijos;
 }
 
-int arbol_borrar(abb_t* arbol, void* elemento) {
-    if (!arbol || arbol_vacio(arbol)) return ERROR;
-    nodo_abb_t* nodo_a_borrar = NULL;
-    nodo_abb_t* nodo_padre = arbol->nodo_raiz;
-    nodo_a_borrar = verifico_nodo_sea_el_esperado(arbol, elemento, nodo_a_borrar);
-    if (!nodo_a_borrar) return ERROR;  //el elemento no se encuentra en el arbol
-
-    int hijos = nodo_tiene_hijos(nodo_a_borrar);
-    nodo_padre = buscar_nodo_padre(arbol->comparador, arbol->nodo_raiz, elemento, nodo_padre);
-    bool es_la_raiz = !(arbol->comparador(elemento, arbol->nodo_raiz->elemento)); // el elemento a borrar es la raiz
-    int comparacion = arbol->comparador(elemento, nodo_padre->elemento);
+/*
+ * Funcion que se ocupa de buscar el predecesor al nodo a borrar. Si no tiene hijos
+ * devuelve NULL. En el caso de que el nodo a borrar tenga un unico hijo izquierdo 
+ * o derecho, ese sera devuelto como el pedecesor. Si tiene 2 hijos el predecesor
+ * debera ser buscado recorriendo el arbol en secuencia inorden.
+ */
+nodo_abb_t* buscar_predecesor_segun_hijos(nodo_abb_t* nodo_a_borrar) {
     nodo_abb_t* predecesor = NULL;
+    int hijos = nodo_tiene_hijos(nodo_a_borrar);
     
     if (hijos == DOS_HIJOS) {
         nodo_abb_t* padre_del_predecesor = nodo_a_borrar;
@@ -325,11 +322,21 @@ int arbol_borrar(abb_t* arbol, void* elemento) {
             padre_del_predecesor->derecha = predecesor->izquierda; 
             predecesor->izquierda = nodo_a_borrar->izquierda;
         }
-    } else if (hijos == UN_HIJO_D) 
+    }else if (hijos == UN_HIJO_D) 
         predecesor = nodo_a_borrar->derecha; 
     else if (hijos == UN_HIJO_I)
         predecesor = nodo_a_borrar->izquierda;
     
+    return predecesor;
+}
+
+/*
+ * Procedimiento que se ocupa de ubicar el predecesor al nodo a borrar en el arbol.
+ */
+void arbol_reacomodar(abb_t* arbol, nodo_abb_t* nodo_a_borrar, nodo_abb_t* nodo_padre, bool es_la_raiz) {
+    int comparacion = arbol->comparador(nodo_a_borrar->elemento, nodo_padre->elemento);
+    nodo_abb_t* predecesor = buscar_predecesor_segun_hijos(nodo_a_borrar);
+
     if (es_la_raiz) //si el elemento a ser borrado es la raiz
         arbol->nodo_raiz =  predecesor;
     else if (comparacion >= IGUAL)  //si el elemento a ser borrado es mayor o igual que su nodo padre
@@ -340,6 +347,19 @@ int arbol_borrar(abb_t* arbol, void* elemento) {
     if(arbol->destructor)
         arbol->destructor(nodo_a_borrar->elemento);
     free(nodo_a_borrar);
+}
+
+int arbol_borrar(abb_t* arbol, void* elemento) {
+    if (!arbol || arbol_vacio(arbol)) return ERROR;
+    nodo_abb_t* nodo_a_borrar = NULL;
+    nodo_abb_t* nodo_padre = arbol->nodo_raiz;
+    nodo_a_borrar = verifico_nodo_sea_el_esperado(arbol, elemento, nodo_a_borrar);
+    if (!nodo_a_borrar) return ERROR;  //el elemento no se encuentra en el arbol
+
+    nodo_padre = buscar_nodo_padre(arbol->comparador, arbol->nodo_raiz, elemento, nodo_padre);
+    bool es_la_raiz = !(arbol->comparador(elemento, arbol->nodo_raiz->elemento)); // el elemento a borrar es la raiz
+
+    arbol_reacomodar(arbol, nodo_a_borrar, nodo_padre, es_la_raiz);
 
     return EXITO;
 }
