@@ -49,15 +49,18 @@ int comparador(void* elemento1, void* elemento2) {
 
 bool mostrar_peso(void* elemento, void* extra){
     extra=extra; //para que no se queje el compilador, gracias -Werror -Wall
-    if(elemento)
-        printf("%i  ", ((manzana_t*)elemento)->peso);
-    return false;
+    if(!elemento)
+        return false;
+       // printf("%i  ", ((manzana_t*)elemento)->peso);
+        
+    return true;
 }
 
 bool mostrar_hasta_5(void* elemento, void* extra){
     extra=extra; //para que no se queje el compilador, gracias -Werror -Wall
     if(elemento){
-        printf("%i  ", ((manzana_t*)elemento)->peso);
+       // printf("%i  ", ((manzana_t*)elemento)->peso);
+        //printf("");
         if(((manzana_t*)elemento)->peso == 5)
             return true;
     }
@@ -67,7 +70,8 @@ bool mostrar_hasta_5(void* elemento, void* extra){
 bool mostrar_acumulado(void* elemento, void* extra){
     if(elemento && extra){
         *(int*)extra += ((manzana_t*)elemento)->peso;
-        printf("%i  ", *(int*)extra);
+       // printf("%i  ", *(int*)extra);
+        //printf("\n");
     }
     return false;
 }
@@ -98,6 +102,61 @@ abb_t* insertar_elementos() {
     return arbol;
 }
 
+void pruebas_de_iterador_interno_postorden() {
+    manzana_t* c10= pesar_manzana(10);
+    abb_t* arbol = insertar_elementos();
+    arbol_insertar(arbol, c10);
+    int acumulador=0;
+    size_t elementos_recorridos = 0;
+    size_t cantidad_esperada = 10;
+    elementos_recorridos = abb_con_cada_elemento(arbol, ABB_RECORRER_POSTORDEN, mostrar_peso, NULL);
+    pa2m_afirmar(elementos_recorridos, "Devuelve la cantidad esperada de elementos");
+    cantidad_esperada = 6;
+    elementos_recorridos = abb_con_cada_elemento(arbol, ABB_RECORRER_POSTORDEN, mostrar_hasta_5, NULL);
+    pa2m_afirmar(elementos_recorridos == cantidad_esperada, "Devuelve la cantidad esperada de elementos");
+    elementos_recorridos = abb_con_cada_elemento(arbol, ABB_RECORRER_POSTORDEN, mostrar_acumulado, &acumulador);
+    pa2m_afirmar(acumulador == 79, "El valor acumulado es el esperado");
+
+    arbol_destruir(arbol);
+   
+}
+
+void pruebas_de_iterador_interno_preorden() {
+    manzana_t* c10= pesar_manzana(10);
+    abb_t* arbol = insertar_elementos();
+    arbol_insertar(arbol, c10);
+    int acumulador=0;
+    size_t elementos_recorridos = 0;
+    size_t cantidad_esperada = 10;
+    elementos_recorridos = abb_con_cada_elemento(arbol, ABB_RECORRER_PREORDEN, mostrar_peso, NULL);
+    pa2m_afirmar(elementos_recorridos, "Devuelve la cantidad esperada de elementos");
+    cantidad_esperada = 2;
+    elementos_recorridos = abb_con_cada_elemento(arbol, ABB_RECORRER_PREORDEN, mostrar_hasta_5, NULL);
+    pa2m_afirmar(elementos_recorridos == cantidad_esperada, "Devuelve la cantidad esperada de elementos");
+    elementos_recorridos = abb_con_cada_elemento(arbol, ABB_RECORRER_PREORDEN, mostrar_acumulado, &acumulador);
+    pa2m_afirmar(acumulador == 79, "El valor acumulado es el esperado");
+
+    arbol_destruir(arbol);
+}
+
+void pruebas_de_iterador_interno_inorden() {
+    manzana_t* c10= pesar_manzana(10);
+    abb_t* arbol = insertar_elementos();
+    arbol_insertar(arbol, c10);
+    int acumulador=0;
+    size_t elementos_recorridos = 0;
+    size_t cantidad_esperada = 10;
+    elementos_recorridos = abb_con_cada_elemento(arbol, ABB_RECORRER_INORDEN, mostrar_peso, NULL);
+    pa2m_afirmar(elementos_recorridos, "Devuelve la cantidad esperada de elementos");
+    cantidad_esperada = 3;
+    elementos_recorridos = abb_con_cada_elemento(arbol, ABB_RECORRER_INORDEN, mostrar_hasta_5, NULL);
+    pa2m_afirmar(elementos_recorridos == cantidad_esperada, "Devuelve la cantidad esperada de elementos");
+    elementos_recorridos = abb_con_cada_elemento(arbol, ABB_RECORRER_INORDEN, mostrar_acumulado, &acumulador);
+    pa2m_afirmar(acumulador == 79, "El valor acumulado es el esperado");
+
+    arbol_destruir(arbol);
+}
+
 void postorden(abb_t* arbol, manzana_t** manzanas, size_t manzanas_esperadas, int* resultado){
     size_t tamanio_array = 10;
     size_t manzanas_recorridas = arbol_recorrido_postorden(arbol, (void**)manzanas, tamanio_array);
@@ -112,7 +171,7 @@ void postorden(abb_t* arbol, manzana_t** manzanas, size_t manzanas_esperadas, in
     pa2m_afirmar(orden_esperado && cantidad_esperada, "El array se encuentra ordenado y con la cantidad esperada de elementos");
 }
 
-void pruebas_de_postorden() { // 1  2  9  8  7  5  10  12  15  10 
+void pruebas_de_postorden() { 
     manzana_t* manzanas[10];
     manzana_t* aux = pesar_manzana(10);
     abb_t* arbol = insertar_elementos();
@@ -306,93 +365,6 @@ void pruebas_de_abb_con_5_elementos() {
     printf("\n");  
 }
 
-void pruebas_recorrido(){
-    manzana_t* elementos[10];
-    manzana_t* c1= pesar_manzana(10);
-    manzana_t* c2= pesar_manzana(5);
-    manzana_t* c3= pesar_manzana(15);
-    manzana_t* c4= pesar_manzana(12);
-    manzana_t* c5= pesar_manzana(2);
-    manzana_t* c6= pesar_manzana(7);
-    manzana_t* c7= pesar_manzana(1);
-    manzana_t* c8= pesar_manzana(8);
-    manzana_t* c9= pesar_manzana(9);
-    manzana_t* c10= pesar_manzana(10);
-    manzana_t* aux = pesar_manzana(10);
-
-    abb_t* arbol = arbol_crear(&comparador,destructor);
-    arbol_insertar(arbol, c1);
-    arbol_insertar(arbol, c2);
-    arbol_insertar(arbol, c3);
-    arbol_insertar(arbol, c4);
-    arbol_insertar(arbol, c5);
-    arbol_insertar(arbol, c6);
-    arbol_insertar(arbol, c7);
-    arbol_insertar(arbol, c8);
-    arbol_insertar(arbol, c9);
-    arbol_insertar(arbol, c10);
-
-/*  
-pa2m_afirmar(arbol_insertar(arbol, c1) == EXITO, "Se pudo insertar el elemento 10"); 
-    pa2m_afirmar(arbol_insertar(arbol, c2) == EXITO, "Se pudo insertar el elemento 5"); 
-    pa2m_afirmar(arbol_insertar(arbol, c3) == EXITO, "Se pudo insertar el elemento 15");   
-    pa2m_afirmar(arbol_insertar(arbol, c4) == EXITO, "Se pudo insertar el elemento 12"); 
-    pa2m_afirmar(arbol_insertar(arbol, c5) == EXITO, "Se pudo insertar el elemento 2");   
-    pa2m_afirmar(arbol_insertar(arbol, c6) == EXITO, "Se pudo insertar el elemento 7"); 
-    pa2m_afirmar(arbol_insertar(arbol, c7) == EXITO, "Se pudo insertar el elemento 1"); 
-    pa2m_afirmar(arbol_insertar(arbol, c8) == EXITO, "Se pudo insertar el elemento 8"); 
-    pa2m_afirmar(arbol_insertar(arbol, c9) == EXITO, "Se pudo insertar el elemento 9");*/ 
-    printf("Recorrido inorden (deberian salir en orden 1 2 5 7 8 9 10 12 15 ): ");
-    size_t cantidad = arbol_recorrido_inorden(arbol, (void**)elementos, 10);
-    for(size_t i=0;i<cantidad;i++)
-        printf("%i  ", elementos[i]->peso);
-    printf("\n");
-
-    printf("\n\nPruebo el iterador interno\n\n");
-    
-    printf("Recorrido inorden iterador interno: ");    
-    abb_con_cada_elemento(arbol, ABB_RECORRER_INORDEN, mostrar_peso, NULL);
-    printf("\n");
-
-    printf("Recorrido preorden iterador interno: ");    
-    abb_con_cada_elemento(arbol, ABB_RECORRER_PREORDEN, mostrar_peso, NULL);
-    printf("\n");
-    
-    printf("Recorrido postorden iterador interno: ");    
-    abb_con_cada_elemento(arbol, ABB_RECORRER_POSTORDEN, mostrar_peso, NULL);
-    printf("\n");
-
-    printf("\nRecorrido inorden hasta encontrar el 5: ");    
-    abb_con_cada_elemento(arbol, ABB_RECORRER_INORDEN, mostrar_hasta_5, NULL);
-    printf("\n");
-
-    printf("Recorrido preorden hasta encontrar el 5: ");    
-    abb_con_cada_elemento(arbol, ABB_RECORRER_PREORDEN, mostrar_hasta_5, NULL);
-    printf("\n");
-
-    printf("Recorrido postorden hasta encontrar el 5: ");    
-    abb_con_cada_elemento(arbol, ABB_RECORRER_POSTORDEN, mostrar_hasta_5, NULL);
-    printf("\n");
-
-    int acumulador=0;
-    printf("\nRecorrido inorden acumulando los valores: ");    
-    abb_con_cada_elemento(arbol, ABB_RECORRER_INORDEN, mostrar_acumulado, &acumulador);
-    printf("\n");
-
-    acumulador=0;
-    printf("Recorrido preorden acumulando los valores: ");    
-    abb_con_cada_elemento(arbol, ABB_RECORRER_PREORDEN, mostrar_acumulado, &acumulador);
-    printf("\n");
-
-    acumulador=0;
-    printf("Recorrido postorden acumulando los valores: ");    
-    abb_con_cada_elemento(arbol, ABB_RECORRER_POSTORDEN, mostrar_acumulado, &acumulador);
-    printf("\n");
-   
-    arbol_destruir(arbol);
-    free(aux);
-}
-
 void pruebas_de_abb_raiz_con_duplicado(){
     manzana_t* c1= pesar_manzana(10);
     manzana_t* c2= pesar_manzana(5);
@@ -456,29 +428,10 @@ void pruebas_de_abb_raiz_con_duplicado(){
     free(aux);
     }
 
-void pruebas_de_abb_raiz(){
-    manzana_t* c1= pesar_manzana(10);
-    manzana_t* c2= pesar_manzana(5);
-    manzana_t* c3= pesar_manzana(15);
-    manzana_t* c4= pesar_manzana(12);
-    manzana_t* c5= pesar_manzana(2);
-    manzana_t* c6= pesar_manzana(7);
-    manzana_t* c7= pesar_manzana(1);
-    manzana_t* c8= pesar_manzana(8);
-    manzana_t* c9= pesar_manzana(9);
+void pruebas_de_abb_raiz(){    
+    abb_t* abb = insertar_elementos();
     manzana_t* aux = pesar_manzana(10);
-    abb_t* abb = arbol_crear(&comparador,&destructor);
 
-    pa2m_afirmar(arbol_insertar(abb, c1) == EXITO, "Se pudo insertar el elemento 10"); 
-    pa2m_afirmar(arbol_insertar(abb, c2) == EXITO, "Se pudo insertar el elemento 5"); 
-    pa2m_afirmar(arbol_insertar(abb, c3) == EXITO, "Se pudo insertar el elemento 15");   
-    pa2m_afirmar(arbol_insertar(abb, c4) == EXITO, "Se pudo insertar el elemento 12"); 
-    pa2m_afirmar(arbol_insertar(abb, c5) == EXITO, "Se pudo insertar el elemento 2");   
-    pa2m_afirmar(arbol_insertar(abb, c6) == EXITO, "Se pudo insertar el elemento 7"); 
-    pa2m_afirmar(arbol_insertar(abb, c7) == EXITO, "Se pudo insertar el elemento 1"); 
-    pa2m_afirmar(arbol_insertar(abb, c8) == EXITO, "Se pudo insertar el elemento 8"); 
-    pa2m_afirmar(arbol_insertar(abb, c9) == EXITO, "Se pudo insertar el elemento 9"); 
-    
     pa2m_afirmar(arbol_borrar(abb, aux) == EXITO, "Se pudo borrar la raiz"); 
     aux->peso = 9;
     pa2m_afirmar(*(int*)arbol_raiz(abb) == *(int*)aux, "El predecesor quedo como raiz"); 
@@ -587,14 +540,12 @@ void pruebas_de_eliminacion_simple() {
     free(aux);
 }
 
-void pruebas_de_abb_nodo_raiz() {   
+void pruebas_de_abb_simple() {   
     manzana_t* c3= pesar_manzana(3);
     manzana_t* c5= pesar_manzana(5);
     manzana_t* c7= pesar_manzana(7);
     manzana_t* c8= pesar_manzana(8);
     manzana_t* c88= pesar_manzana(8);
-
-   // manzana_t* c9= pesar_manzana(9);
     manzana_t* c55= pesar_manzana(5);
 
     manzana_t* aux = pesar_manzana(0);
@@ -633,8 +584,6 @@ int main() {
 
     pa2m_nuevo_grupo("PRUEBAS DE ARBOL");
     pruebas_de_abb_con_5_elementos();
-    printf("------------------------------------------------------------");
-    pruebas_de_abb_nodo_raiz();
 
     pa2m_nuevo_grupo("PRUEBAS CON NULL");
     pruebas_con_null();
@@ -645,26 +594,16 @@ int main() {
     pa2m_nuevo_grupo("PRUEBAS DE ABB RAIZ CON ELEMENTOS DUPLICADOS");
     pruebas_de_abb_raiz_con_duplicado();
 
-  /*  
-
-    pa2m_nuevo_grupo("PRUEBAS DE ABB VACIO");
-    pruebas_de_abb_vacio();
-
     pa2m_nuevo_grupo("PRUEBAS DE INSERCION SIMPLE");
-    abb_t* abb_simple = pruebas_de_insercion_simple();*/
+    pruebas_de_abb_simple();
 
     pa2m_nuevo_grupo("PRUEBAS DE ELIMINACION SIMPLE");
     pruebas_de_eliminacion_simple();
     
     pa2m_nuevo_grupo("PRUEBAS DE INSERCION Y ELIMINACION MULTIPLE");
     pruebas_de_eliminacion_doble();
-    /*
-    abb_t* abb_multiple = pruebas_de_insercion_multiple();
-*/
-   pa2m_nuevo_grupo("PRUEBAS DE RECORRIDO INORDEN");
-    pruebas_recorrido();
 
-     pa2m_nuevo_grupo("PRUEBAS DE RECORRIDO INORDEN");
+    pa2m_nuevo_grupo("PRUEBAS DE RECORRIDO INORDEN");
     pruebas_de_inorden();
 
     pa2m_nuevo_grupo("PRUEBAS DE RECORRIDO PREORDEN");
@@ -673,9 +612,16 @@ int main() {
     pa2m_nuevo_grupo("PRUEBAS DE RECORRIDO POSTORDEN");
     pruebas_de_postorden();
     
-/*
-    pa2m_nuevo_grupo("PRUEBAS DE ITERADOR"); 
-    pruebas_de_iterador();*/
+    pa2m_nuevo_grupo("PRUEBAS DE ITERADOR INTERNO"); 
+
+    pa2m_nuevo_grupo("ITERADOR INTERNO INORDEN"); 
+    pruebas_de_iterador_interno_inorden();
+
+    pa2m_nuevo_grupo("ITERADOR INTERNO PREORDEN"); 
+    pruebas_de_iterador_interno_preorden(); 
+
+    pa2m_nuevo_grupo("ITERADOR INTERNO POSTORDEN"); 
+    pruebas_de_iterador_interno_postorden();
 
     pa2m_mostrar_reporte();
     return EXITO;
